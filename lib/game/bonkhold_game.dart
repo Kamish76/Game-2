@@ -138,11 +138,12 @@ class BonkholdGame extends FlameGame {
   }
 
   /// Drops an XP shard or Gold coin at (x, y).
-  void spawnPickup(double x, double y, int value, bool isGold) {
+  void spawnPickup(double x, double y, int value, bool isGold, {bool autoCollect = true}) {
     final pickup = PickupComponent(
       position: Vector2(x, y),
       value: value,
       isGold: isGold,
+      autoCollect: autoCollect,
     );
     _activePickups.add(pickup);
     world.add(pickup);

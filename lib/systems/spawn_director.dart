@@ -36,10 +36,10 @@ class SpawnDirector {
   int get bossesSpawned => _bossesSpawned;
 
   /// Calculates credits earned per second at elapsed time [t].
-  /// Formula: (4 + 0.35*t + 0.005*t^2) * (1 + curse)
+  /// Formula: (2.0 + 0.175*t + 0.0025*t^2) * (1 + curse)
   /// At t >= 900s (Overtime / Final Swarm): doubles by +100% (2.0x)
   static double creditsPerSecond(double t, double curse) {
-    final double baseRate = 4.0 + 0.35 * t + 0.005 * t * t;
+    final double baseRate = 2.0 + 0.175 * t + 0.0025 * t * t;
     final double overtimeMult = t >= 900.0 ? 2.0 : 1.0;
     return baseRate * (1.0 + curse) * overtimeMult;
   }
@@ -70,8 +70,8 @@ class SpawnDirector {
     final double x = GameConfig.spawnRadius * math.cos(theta);
     final double y = GameConfig.spawnRadius * math.sin(theta);
 
-    // Scaling base HP: 1500 + 350 * (wave - 1)
-    final double hpScale = (1500.0 + 350.0 * (_bossesSpawned - 1)) / yokaiGoliathDef.baseHp;
+    // Scaling base HP: 1500 + 175 * (wave - 1)
+    final double hpScale = (1500.0 + 175.0 * (_bossesSpawned - 1)) / yokaiGoliathDef.baseHp;
 
     onSpawn(
       yokaiGoliathDef,
@@ -96,13 +96,13 @@ class SpawnDirector {
       available.add(spitterDef);
     }
 
-    // Overtime stat escalations: +10% HP and +5% speed per 30s past 900s
+    // Overtime stat escalations: +5% HP and +2.5% speed per 30s past 900s
     double statHp = 1.0;
     double statSpeed = 1.0;
     if (_elapsedTime >= 900.0) {
       final int otCycles = ((_elapsedTime - 900.0) / 30.0).floor();
-      statHp = 1.0 + (otCycles * 0.10);
-      statSpeed = 1.0 + (otCycles * 0.05);
+      statHp = 1.0 + (otCycles * 0.05);
+      statSpeed = 1.0 + (otCycles * 0.025);
     }
 
     // Spawn while credits allow and under entity cap

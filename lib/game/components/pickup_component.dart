@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 
 import '../bonkhold_game.dart';
+import 'bastion.dart';
 
 /// An XP shard or Gold coin on the field that auto-vacuums towards the Bastion at (0, 0).
 class PickupComponent extends PositionComponent with HasGameReference<BonkholdGame> {
@@ -11,7 +12,9 @@ class PickupComponent extends PositionComponent with HasGameReference<BonkholdGa
     required Vector2 position,
     required this.value,
     this.isGold = false,
-  }) : super(
+    this.autoCollect = true,
+  })  : _isAttracted = autoCollect,
+        super(
           position: position,
           size: Vector2.all(isGold ? 6.0 : (value >= 25 ? 8.0 : (value >= 5 ? 6.0 : 4.0))),
           anchor: Anchor.center,
@@ -22,10 +25,11 @@ class PickupComponent extends PositionComponent with HasGameReference<BonkholdGa
 
   final int value;
   final bool isGold;
+  final bool autoCollect;
 
   double _vx = 0.0;
   double _vy = 0.0;
-  bool _isAttracted = false;
+  bool _isAttracted;
 
   late final Paint _fillPaint;
   late final Paint _corePaint;
@@ -55,16 +59,18 @@ class PickupComponent extends PositionComponent with HasGameReference<BonkholdGa
     final double dist = math.sqrt(distSq);
 
     // Check absorption into Bastion core
-    if (dist <= 12.0) {
+    if (dist <= Bastion.radius) {
       game.onPickupAbsorbed(this);
       removeFromParent();
       return;
     }
 
-    // Check attraction radius
-    final double attractRadius = game.runState.stats.attraction;
-    if (!_isAttracted && dist <= attractRadius) {
-      _isAttracted = true;
+    // Check attraction radius if not already auto-attracting
+    if (!_isAttracted) {
+      final double attractRadius = game.runState.stats.attraction;
+      if (dist <= attractRadius) {
+        _isAttracted = true;
+      }
     }
 
     if (_isAttracted) {

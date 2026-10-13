@@ -68,5 +68,6 @@
 
 ## 5. Economy & Escalation Curves
 - **XP per Level:** $\text{xpToNext}(L) = \text{round}\left(5 + 4(L-1) + 0.6(L-1)^2\right)$.
-- **Spawn Budget:** $\text{CreditsPerSec}(t) = \left(4 + 0.35t + 0.005t^2\right) \times (1 + \text{Curse})$.
-- **Overtime Surge (15:00+):** $+100\%$ Spawn credits rate, $+10\%\text{ HP}$ per 30s survived.
+- **Spawn Budget:** $\text{CreditsPerSec}(t) = \left(2 + 0.175t + 0.0025t^2\right) \times (1 + \text{Curse})$.
+- **Overtime Surge (15:00+):** $+100\%$ Spawn credits rate, $+5\%\text{ HP}$ per 30s survived.
+- **Boss HP Scaling:** $1,500 + 175 \times (\text{WaveCount} - 1)$.

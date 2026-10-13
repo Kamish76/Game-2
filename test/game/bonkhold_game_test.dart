@@ -80,6 +80,34 @@ void main() {
     );
 
     testWithGame<BonkholdGame>(
+      'Drops spawned at long range (150px) are auto-collected and absorbed by stationary Bastion',
+      BonkholdGame.new,
+      (game) async {
+        await game.ready();
+
+        // Spawn XP pickup and Gold pickup far beyond old 48px attraction radius at (0, 150)
+        // XP value is 3 (below level 1 threshold of 5 XP to avoid triggering level-up overlay)
+        game.spawnPickup(0, 150, 3, false);
+        game.spawnPickup(150, 0, 5, true);
+        await game.ready();
+
+        expect(game.activePickupCount, 2);
+        expect(game.runState.currentXp.value, 0);
+        expect(game.runState.gold.value, 0);
+
+        // Advance simulation ticks (clamped dt = 0.05)
+        // At 350 px/s^2, distance 150px takes ~0.92s. 35 ticks * 0.05s = 1.75s
+        for (int i = 0; i < 35; i++) {
+          game.update(0.05);
+        }
+
+        expect(game.activePickupCount, 0);
+        expect(game.runState.currentXp.value, 3);
+        expect(game.runState.gold.value, 5);
+      },
+    );
+
+    testWithGame<BonkholdGame>(
       'Enemy contacts Bastion and inflicts damage',
       BonkholdGame.new,
       (game) async {
