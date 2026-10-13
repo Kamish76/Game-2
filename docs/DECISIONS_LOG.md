@@ -81,6 +81,19 @@
 
 ---
 
+## ADR 010: Gentle Exponential Difficulty Scaling & Baseline Damage Calibration
+- **Date:** 2026-10-13
+- **Status:** Accepted
+- **Context:** The initial quadratic spawn credit budget ($(4 + 0.35t + 0.005t^2) \times (1 + \text{Curse})$) ramped too aggressively in early run phases, spawning up to 4 enemies/s at $t=0$ and overwhelming players before initial level-ups could be acquired. Baseline weapon damage was also insufficient to one-shot basic Swarmlings ($18\text{ HP}$).
+- **Decision:**
+  1. Replace quadratic scaling with a gentle exponential curve: $\text{CreditsPerSec}(t) = 0.8 \times e^{0.008t} \times (1 + \text{Curse})$.
+  2. Pace enemy archetype unlocks: Swarmlings ($0\text{s}$), Runners ($30\text{s}$), Brutes ($60\text{s}$), Spitters ($90\text{s}$).
+  3. Increase all baseline weapon damages by +25% rounded up: Ember Staff ($14 \to 18$), Revolver Battery ($6 \to 8$), Pulse Aura ($8 \to 10$), Rail Sniper ($32 \to 40$).
+  4. Halve Boss HP wave increment ($+350 \to +175$) and Overtime stat growth ($+5\%\text{ HP}$, $+2.5\%\text{ Speed}$ per 30s).
+- **Consequences:** Smooth early-game onboarding allowing players to one-shot early fodder, draft synergies, and experience an exponential but sustainable horde escalation.
+
+---
+
 ## ADR 011: Bounded Overlay Architecture & Responsive HUD Anchoring
 - **Date:** 2026-10-13
 - **Status:** Accepted
@@ -93,16 +106,3 @@
   - Display active Shield integrity (`[SHIELD: X]`) with a cyan border and glow (`#38BDF8`) when `shield > 0`.
   - Relocate debug FPS counter to `Alignment.topRight` with an offset (`top: 46`) to prevent overlapping top-left Pause and Timer controls.
 - **Consequences:** Zero layout overflows, guaranteed non-zero render dimensions on all screen sizes, perfect mobile portrait ergonomics, and cohesive desktop/web centering aligned with the $180 \times 320$ virtual canvas.
-
----
-
-## ADR 010: Gentle Exponential Difficulty Scaling & Baseline Damage Calibration
-- **Date:** 2026-10-13
-- **Status:** Accepted
-- **Context:** The initial quadratic spawn credit budget ($(4 + 0.35t + 0.005t^2) \times (1 + \text{Curse})$) ramped too aggressively in early run phases, spawning up to 4 enemies/s at $t=0$ and overwhelming players before initial level-ups could be acquired. Baseline weapon damage was also insufficient to one-shot basic Swarmlings ($18\text{ HP}$).
-- **Decision:**
-  1. Replace quadratic scaling with a gentle exponential curve: $\text{CreditsPerSec}(t) = 0.8 \times e^{0.008t} \times (1 + \text{Curse})$.
-  2. Pace enemy archetype unlocks: Swarmlings ($0\text{s}$), Runners ($30\text{s}$), Brutes ($60\text{s}$), Spitters ($90\text{s}$).
-  3. Increase all baseline weapon damages by +25% rounded up: Ember Staff ($14 \to 18$), Revolver Battery ($6 \to 8$), Pulse Aura ($8 \to 10$), Rail Sniper ($32 \to 40$).
-  4. Halve Boss HP wave increment ($+350 \to +175$) and Overtime stat growth ($+5\%\text{ HP}$, $+2.5\%\text{ Speed}$ per 30s).
-- **Consequences:** Smooth early-game onboarding allowing players to one-shot early fodder, draft synergies, and experience an exponential but sustainable horde escalation.
