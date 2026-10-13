@@ -81,7 +81,7 @@
 
 ---
 
-## ADR 010: Bounded Overlay Architecture & Responsive HUD Anchoring
+## ADR 011: Bounded Overlay Architecture & Responsive HUD Anchoring
 - **Date:** 2026-10-13
 - **Status:** Accepted
 - **Context:** Flame's `GameWidget` supplies loose constraints (`0.0 <= w <= screenWidth, 0.0 <= h <= screenHeight`) to Flutter overlay builders. A `Stack(fit: StackFit.loose)` containing only `Positioned` children evaluates to `Size(0.0, 0.0)`, causing `Positioned(left: 8, right: 8)` children to collapse to 0 width and rendering the XP bar, level indicator, Bastion HP bar, and Boss health bar completely invisible. Additionally, widescreen web displays stretched HUD elements across the monitor away from the centered portrait game arena.
