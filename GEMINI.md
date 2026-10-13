@@ -16,3 +16,12 @@
 
 ## 4. Environment Execution
 - On this macOS workstation, running `flutter` CLI commands requires `BypassSandbox: true` to execute without sandbox permission errors.
+
+## 5. Flame Testing & Simulation Ticking Hygiene
+- **Step-Clamped Testing:** The core game loop clamps `dt` to `dt.clamp(0.0, 1.0 / 20.0)` ($0.05\text{s}$). Integration tests simulating durations or cadence intervals MUST advance time in small loops (e.g., `for (int i = 0; i < N; i++) game.update(0.05);`), never with a single large `dt`.
+- **Lifecycle Mount Queueing:** Components added during callbacks (`world.add(...)`) remain in Flame's pending queue until the engine ticks. Run `game.update(0.05)` before asserting on `world.children`.
+
+## 6. Modern Flutter & Flame Conventions
+- **Color Alpha:** Use `Color.withValues(alpha: ...)` instead of deprecated `Color.withOpacity(...)`.
+- **Button Event Handlers:** Use `onPressed:` on `ElevatedButton`, `OutlinedButton`, and `TextButton`, reserving `onTap:` for `InkWell` and `GestureDetector`.
+
