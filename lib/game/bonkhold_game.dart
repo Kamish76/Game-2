@@ -1,5 +1,6 @@
 import 'dart:math' as math;
-import 'dart:ui';
+
+import 'package:flutter/widgets.dart';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -13,6 +14,7 @@ import '../models/enemy_def.dart';
 import '../models/run_state.dart';
 import '../systems/camera_director.dart';
 import '../systems/draft_system.dart';
+import '../systems/merchant_director.dart';
 import '../systems/spawn_director.dart';
 import '../systems/spatial_hash.dart';
 import '../systems/stat_engine.dart';
@@ -24,6 +26,7 @@ import 'components/damage_number.dart';
 import 'components/enemy_component.dart';
 import 'components/pickup_component.dart';
 import 'components/projectile_component.dart';
+import 'components/traveling_merchant_component.dart';
 import 'components/weapon_component.dart';
 
 /// Root Flame game orchestrating world entities, systems loop, and UI overlays.
@@ -44,17 +47,20 @@ class BonkholdGame extends FlameGame with TapCallbacks {
   late final SpatialHash spatialHash;
   late final SpawnDirector spawnDirector;
   late final DraftSystem draftSystem;
+  late final MerchantDirector merchantDirector;
 
   late Bastion bastion;
 
   final Map<int, EnemyComponent> _activeEnemies = <int, EnemyComponent>{};
   final List<PickupComponent> _activePickups = <PickupComponent>[];
   final List<ChestComponent> _activeChests = <ChestComponent>[];
+  TravelingMerchantComponent? _activeMerchant;
   int _nextEnemyId = 1;
 
   int get activeEnemyCount => _activeEnemies.length;
   int get activePickupCount => _activePickups.length;
   int get activeChestCount => _activeChests.length;
+  TravelingMerchantComponent? get activeMerchant => _activeMerchant;
   EnemyComponent? findEnemyById(int id) => _activeEnemies[id];
 
   @override
@@ -67,6 +73,18 @@ class BonkholdGame extends FlameGame with TapCallbacks {
 
     spatialHash = SpatialHash(cellSize: 32.0);
     draftSystem = DraftSystem(rng: rng);
+    merchantDirector = MerchantDirector();
+
+    // Register fallback overlay builder stubs so headless tests can trigger overlays safely
+    for (final id in [
+      OverlayIds.hud,
+      OverlayIds.levelUp,
+      OverlayIds.pause,
+      OverlayIds.gameOver,
+      OverlayIds.merchant,
+    ]) {
+      overlays.addEntry(id, (_, _) => const SizedBox.shrink());
+    }
 
     _initRun();
 
@@ -277,6 +295,23 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     );
   }
 
+  /// Spawns the Traveling Merchant cart heading for the Bastion.
+  void spawnMerchant({double? x, double? y}) {
+    if (runState.isGameOver) return;
+    if (_activeMerchant != null && _activeMerchant!.isMounted) return;
+    final double spawnX = x ?? (rng.nextBool() ? 120.0 : -120.0);
+    final double spawnY = y ?? (rng.nextDouble() * 200.0 - 100.0);
+    final merchant = TravelingMerchantComponent(position: Vector2(spawnX, spawnY));
+    _activeMerchant = merchant;
+    world.add(merchant);
+  }
+
+  /// Hook called when the merchant departs from the arena.
+  void onMerchantDeparted() {
+    _activeMerchant = null;
+    merchantDirector.onMerchantDeparted();
+  }
+
   @override
   void update(double dt) {
     if (runState.isPaused) return;
@@ -301,6 +336,11 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     }
 
     spawnDirector.update(step, runState.stats.curse);
+
+    // Traveling Merchant periodic arrival check
+    if (merchantDirector.update(step)) {
+      spawnMerchant();
+    }
 
     // Rebuild spatial hash with active enemies before child updates
     spatialHash.clear();
@@ -375,6 +415,7 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     overlays.remove(OverlayIds.gameOver);
     overlays.remove(OverlayIds.pause);
     overlays.remove(OverlayIds.levelUp);
+    overlays.remove(OverlayIds.merchant);
 
     // Clear active dynamic components
     for (final enemy in _activeEnemies.values) {
@@ -394,6 +435,11 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     }
     _activeChests.clear();
 
+    if (_activeMerchant != null) {
+      _activeMerchant!.removeFromParent();
+      _activeMerchant = null;
+    }
+
     final weapons = world.children.whereType<WeaponComponent>().toList();
     for (final w in weapons) {
       w.removeFromParent();
@@ -406,6 +452,7 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     );
     StatEngine.recompute(runState);
     spawnDirector.reset();
+    merchantDirector.reset();
     cameraDirector.reset();
     camera.viewfinder.zoom = cameraDirector.currentZoom;
 

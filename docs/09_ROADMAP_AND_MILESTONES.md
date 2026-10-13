@@ -81,11 +81,11 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 - [x] Add tap-to-open chest interaction, visual fanfare, and Relic acquisition.
 - [x] Build Pause Overlay Relic Inspector and HUD indicator.
 
-### Milestone 8: The Traveling Merchant & Alchemical Forge
-- [ ] Build `MerchantDirector` scheduling peddler arrival every 3:00.
-- [ ] Implement 15s departure countdown timer and arrival/departure pathing.
-- [ ] Build Traveling Merchant modal overlay (purchasing Relics with in-run Gold).
-- [ ] Implement Alchemical Forge tab (sacrificing/duplicating items with Gold).
+### Milestone 8: The Traveling Merchant & Alchemical Forge (COMPLETED ✅)
+- [x] Build `MerchantDirector` scheduling peddler arrival every 3:00.
+- [x] Implement 15s departure countdown timer and arrival/departure pathing.
+- [x] Build Traveling Merchant modal overlay (purchasing Relics with in-run Gold).
+- [x] Implement Alchemical Forge tab (sacrificing/duplicating items with Gold).
 
 ### Milestone 9: Permanent Meta-Progression (Silver Economy)
 - [ ] Implement `MetaRepository` service backed by `SharedPreferences`.

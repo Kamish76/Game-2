@@ -8,6 +8,7 @@ import 'ui/overlays/debug_overlay.dart';
 import 'ui/overlays/game_over_overlay.dart';
 import 'ui/overlays/hud_overlay.dart';
 import 'ui/overlays/level_up_overlay.dart';
+import 'ui/overlays/merchant_overlay.dart';
 import 'ui/overlays/overlay_ids.dart';
 import 'ui/overlays/pause_overlay.dart';
 
@@ -56,6 +57,7 @@ class _GameScreenState extends State<GameScreen> {
           OverlayIds.levelUp: (context, game) => LevelUpOverlay(game: game),
           OverlayIds.pause: (context, game) => PauseOverlay(game: game),
           OverlayIds.gameOver: (context, game) => GameOverOverlay(game: game),
+          OverlayIds.merchant: (context, game) => MerchantOverlay(game: game),
         },
         initialActiveOverlays: [
           OverlayIds.hud,
