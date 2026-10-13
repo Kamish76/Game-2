@@ -52,3 +52,10 @@ Prior to merging or committing any milestone increment:
 1. `flutter analyze` must report 0 issues.
 2. `flutter test` must pass 100% of tests.
 3. `flutter build web` must compile cleanly.
+
+---
+
+## 4. Git & Branching Strategy
+- **`dev` (Active Development):** Primary working branch. All feature work, bug fixes, experiments, and daily milestone commits land on `dev`.
+- **`main` (Production / Stable Releases):** Protected release branch. Only merged from `dev` when a complete milestone release or public build is validated.
+
