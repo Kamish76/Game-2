@@ -71,9 +71,36 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 
 ---
 
-## Phase 2: Field Interactables & Meta-Progression (FUTURE ROADMAP)
-- [ ] Implement Chest drops and tap-to-open gold economy.
-- [ ] Build Field Shrines (Charge Shrine, Moai, Greed, Boss Curse, Succ).
-- [ ] Implement the Microwave / Alchemical Forge for item duplication.
-- [ ] Implement the Warden drone for active spatial player agency.
-- [ ] Build permanent Meta-Progression skill tree with Silver currency.
+## Phase 2: The Fortress & The Peddler (IN PROGRESS)
+*Detailed architecture: [12_PHASE_2_SPECIFICATION.md](12_PHASE_2_SPECIFICATION.md)*
+
+### Milestone 7: Item Relic Engine & Moat Chests
+- [ ] Implement `ItemDef`, `ItemInstance`, and 12 Core Relics registry.
+- [ ] Build zero-allocation proc hooks in `DamageResolver` (`onHit`, `onCrit`, `onDamaged`, `onDeflect`, `onKill`).
+- [ ] Add Elite ($20\%$) and Boss ($100\%$) chest drops auto-vacuuming to the Bastion moat ring.
+- [ ] Add tap-to-open chest interaction, visual fanfare, and Relic acquisition.
+- [ ] Build Pause Overlay Relic Inspector and HUD indicator.
+
+### Milestone 8: The Traveling Merchant & Alchemical Forge
+- [ ] Build `MerchantDirector` scheduling peddler arrival every 3:00.
+- [ ] Implement 15s departure countdown timer and arrival/departure pathing.
+- [ ] Build Traveling Merchant modal overlay (purchasing Relics with in-run Gold).
+- [ ] Implement Alchemical Forge tab (sacrificing/duplicating items with Gold).
+
+### Milestone 9: Permanent Meta-Progression (Silver Economy)
+- [ ] Implement `MetaRepository` service backed by `SharedPreferences`.
+- [ ] Award Silver Coins on Game Over / Results screen based on survival time and kills.
+- [ ] Build Shrine of Heritage talent tree overlay (Base HP, Armor, Luck, Greed, Draft charges).
+- [ ] Integrate unlocked meta-talents into `StatEngine.recompute()` at run start.
+
+### Milestone 10: Phase 2 Economy Polish, Audio & Verification
+- [ ] Calibrate gold income against merchant pricing and forge transmutation costs.
+- [ ] Integrate Phase 2 SFX (chest creak/open, merchant chime/departure, forge hammer).
+- [ ] Comprehensive unit and Flame tests across all new components.
+
+---
+
+## Phase 3: Scope Deferrals (FUTURE ROADMAP)
+- [ ] Additional Tower Chassis (Obsidian Fortress, Raiden Pagoda, Necro Spire).
+- [ ] Field Shrines & Altars (Charge Shrines, Greed Shrine, Boss Curse Shrine).
+- [ ] Mobile Warden Drone & Active Player Abilities.

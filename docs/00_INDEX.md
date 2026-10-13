@@ -34,6 +34,7 @@
 | 09 | [Roadmap & Milestones](09_ROADMAP_AND_MILESTONES.md) | Incremental build plan with checklists | Living (Phase 1 Complete) |
 | 10 | [Coding Conventions & Testing](10_CODING_CONVENTIONS_AND_TESTING.md) | Style, tests, git | Implemented |
 | 11 | [Balance Sheet](11_BALANCE_SHEET.md) | Starting numbers (tunable) | Implemented |
+| 12 | [Phase 2 Specification](12_PHASE_2_SPECIFICATION.md) | The Fortress & The Peddler architecture | Locked |
 | — | [Decisions Log](DECISIONS_LOG.md) | Why we chose what we chose | Living |
 | — | [Glossary](GLOSSARY.md) | Shared vocabulary | Living |
 
