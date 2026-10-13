@@ -31,6 +31,10 @@ Every system calculation must have comprehensive automated test coverage:
 ### 2.2 Flame Integration Tests (`test/game/`)
 Use `flame_test` (`testWithGame`) to verify component lifecycles, mounting, and world hierarchies without needing a physical screen:
 
+- **Mandatory `testWithGame` Harness:** Never instantiate raw `game = BonkholdGame(); await game.onLoad();` in unit tests, as `game.isMounted` and child lifecycle flags will remain `false`.
+- **Lifecycle Mounting Synchronization:** Components added via `world.add(...)` or `spawnEnemy(...)` are queued in Flame's pending lifecycle list. Call `await game.ready();` before advancing simulation ticks or asserting on spatial queries and world state.
+- **Step-Clamped Simulation Ticking:** The core game loop clamps `dt` to `dt.clamp(0.0, 1.0 / 20.0)` ($0.05\text{s}$). Integration tests simulating durations or cadence intervals MUST advance time in small loops (e.g., `for (int i = 0; i < N; i++) game.update(0.05);`), never with a single large `dt`.
+
 ```dart
 testWithGame<BonkholdGame>(
   'Enemy advances toward Bastion each tick',
@@ -39,11 +43,25 @@ testWithGame<BonkholdGame>(
     await game.ready();
     final enemy = EnemyComponent(position: Vector2(0, 100));
     await game.world.add(enemy);
-    game.update(1.0);
+    await game.ready();
+    for (int i = 0; i < 20; i++) {
+      game.update(0.05);
+    }
     expect(enemy.position.y, lessThan(100));
   },
 );
 ```
+
+### 2.3 Flutter Overlay Widget Tests (`test/ui/`)
+Tests verifying UI overlays layered over Flame (`HudOverlay`, `LevelUpOverlay`, `PauseOverlay`, etc.):
+- **Harness & Initialization:**
+  - Instantiate `BonkholdGame` and call `await game.onLoad()` to initialize `RunState` and audio services safely without entering a live game loop ticker (avoiding deadlocks in widget test runners).
+  - Wrap the target overlay in `MaterialApp(home: Scaffold(body: HudOverlay(game: game)))`.
+  - Set explicit test view dimensions matching mobile portrait (e.g. `tester.view.physicalSize = const Size(360, 640); tester.view.devicePixelRatio = 1.0;`).
+- **Required Assertions:**
+  - **Bounded Non-Zero Dimensions:** Verify that root widgets and sub-bars evaluate to non-zero width and height (`expect(tester.getSize(find.byKey(...)).width, greaterThan(0))`).
+  - **Reactive State Propagation:** Verify `ValueListenableBuilder` triggers upon mutating `runState.xpProgress`, `runState.hp`, `runState.shield`, `runState.bossHealthRatio`, and `runState.loadoutVersion`.
+  - **Touch Target Integrity:** Ensure interactive overlay targets (e.g., Pause button, Level-up cards) satisfy minimum dimensions ($\ge 48 \times 48\text{ dp}$).
 
 ---
 
