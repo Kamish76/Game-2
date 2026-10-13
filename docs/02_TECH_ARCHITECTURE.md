@@ -120,7 +120,7 @@ Target: **60 FPS on a mid-range Android** with **400 enemies + 300 projectiles +
 | `pause` | Pause button / app backgrounded | Resume / Quit |
 | `gameOver` | HP = 0 | Results + Retry |
 
-Overlay ids live in `lib/ui/overlays/overlay_ids.dart`.
+Overlay ids live in `lib/ui/overlays/overlay_ids.dart`. Overlays wrap in bounded responsive layouts (`SizedBox.expand -> SafeArea -> Align(center) -> ConstrainedBox(maxWidth: 480) -> Stack(fit: StackFit.expand)`) to eliminate loose-constraint collapse and center UI on widescreen displays (ADR 011).
 
 ## 11. Platform notes
 - **Web (dev loop):** `flutter run -d chrome`. Hot reload works. Use Chrome DevTools device toolbar (e.g. 390×844) to preview portrait.

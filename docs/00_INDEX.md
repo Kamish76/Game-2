@@ -23,15 +23,15 @@
 | 3.6 | [Items](03_systems/3.6_items.md) | Passive items and procs (**Phase 2**) | On hold |
 | 3.7 | [Enemies & Spawning](03_systems/3.7_enemies_and_spawning.md) | Enemy roster, spawn director | Implemented (Core Roster) |
 | 3.8 | [Economy: XP, Gold, Chests](03_systems/3.8_economy_xp_gold_chests.md) | Pickups, vacuum, gold. Chests are **Phase 2** | Implemented (Vacuum & Drops) |
-| 3.9 | [Endless Mode](03_systems/3.9_endless_mode.md) | Difficulty curve, bosses, score | In progress |
+| 3.9 | [Endless Mode](03_systems/3.9_endless_mode.md) | Difficulty curve, bosses, score | Implemented |
 | 3.10 | [Meta Progression](03_systems/3.10_meta_progression.md) | Silver, unlocks (**Phase 2+**) | Stub |
 | 3.11 | [Phase 2 Interactables](03_systems/3.11_phase2_interactables.md) | Chests, shrines, Microwave, Warden | On hold |
 | 04 | [Kitsune Spire](04_characters/kitsune_spire.md) | Starter character (Fox-style) | Implemented |
 | 05 | [Pixel Art Asset List](05_ART_PIXEL_ASSET_LIST.md) | Art spec + master checklist | Draft (Geometric Fallbacks Active) |
-| 06 | [Audio Asset List](06_AUDIO_ASSET_LIST.md) | SFX/music checklist | Draft (Phase 6) |
+| 06 | [Audio Asset List](06_AUDIO_ASSET_LIST.md) | SFX/music checklist | Implemented (AudioManager) |
 | 07 | [UI/UX & Screens](07_UI_UX_AND_SCREENS.md) | Screen flow, HUD, level-up cards | Implemented |
 | 08 | [Data Schemas](08_DATA_SCHEMAS.md) | Dart definitions for content | Implemented |
-| 09 | [Roadmap & Milestones](09_ROADMAP_AND_MILESTONES.md) | Incremental build plan with checklists | Living (M0-M3 Complete) |
+| 09 | [Roadmap & Milestones](09_ROADMAP_AND_MILESTONES.md) | Incremental build plan with checklists | Living (Phase 1 Complete) |
 | 10 | [Coding Conventions & Testing](10_CODING_CONVENTIONS_AND_TESTING.md) | Style, tests, git | Implemented |
 | 11 | [Balance Sheet](11_BALANCE_SHEET.md) | Starting numbers (tunable) | Implemented |
 | — | [Decisions Log](DECISIONS_LOG.md) | Why we chose what we chose | Living |
