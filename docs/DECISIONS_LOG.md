@@ -54,12 +54,12 @@
 
 ---
 
-## ADR 007: Gravitational Auto-Vacuum for Loot Pickups
+## ADR 007: Gravitational Auto-Vacuum for Loot Pickups (Amended)
 - **Date:** 2026-10-13
-- **Status:** Accepted
-- **Context:** Because the Bastion is stationary, manual collection of scattered drops is impossible.
-- **Decision:** Drops within the Bastion's Attraction radius are automatically pulled toward $(0, 0)$ with acceleration.
-- **Consequences:** Replaces physical kiting with strategic investment in the Attraction Tome.
+- **Status:** Accepted (Amended to Global Vacuum)
+- **Context:** Because the Bastion is stationary at `(0, 0)` and cannot move, limiting pickup collection to a local Attraction radius ($48\text{ px}$) caused drops from enemies killed at long range ($80\text{--}200\text{ px}$) to be permanently stranded and uncollectible.
+- **Decision:** All standard dropables (XP shards and Gold coins) default to global auto-vacuum (`autoCollect = true`) from any distance across the arena, accelerating smoothly toward `(0, 0)` at $350\text{ px/s}^2$ and absorbing at the Bastion hull ($16\text{ px}$). The base `attraction` stat is retained as a fallback query distance for future non-autocollect interactables.
+- **Consequences:** Eliminates stranded resources while maintaining satisfying visual vacuum streams and preserving zero-allocation hot paths.
 
 ---
 

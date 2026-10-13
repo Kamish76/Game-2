@@ -38,7 +38,7 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 
 ## Milestone 3: XP Vacuum & Level-Up Drafting (COMPLETED ✅)
 - [x] Implement `PickupComponent` for XP shards.
-- [x] Build gravitational acceleration vacuum pulling shards within Attraction radius.
+- [x] Build gravitational acceleration vacuum pulling shards (updated to global auto-vacuum from any range).
 - [x] Shard absorption into `RunState.xp` and level threshold evaluation.
 - [x] Build `LevelUp` Flutter overlay: pauses game, displays 3 cards with rolled Rarity.
 - [x] Apply Kitsune Spire passive: $+1.5\%$ Luck per level-up.

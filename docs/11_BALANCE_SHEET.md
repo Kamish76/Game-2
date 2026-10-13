@@ -16,7 +16,7 @@
 | Starting Deflect | 0% | 0% | Points ($E / (E + 100)$) |
 | Innate Luck | 15% | 0% | Percentage |
 | Luck Scaling | +1.5% | 0% | Additive per Level-Up |
-| Attraction Radius | 48 | 48 | Pixels |
+| Attraction Radius | 48 | 48 | Pixels (Fallback; standard drops vacuum globally) |
 | Max Weapon Slots | 4 | 4 | Discrete Slots |
 | Max Tome Slots | 4 | 4 | Discrete Slots |
 
