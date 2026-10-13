@@ -14,7 +14,8 @@ class LevelUpOverlay extends StatefulWidget {
 }
 
 class _LevelUpOverlayState extends State<LevelUpOverlay> {
-  late final List<DraftCard> _cards;
+  late List<DraftCard> _cards;
+  bool _isBanishMode = false;
 
   @override
   void initState() {
@@ -23,6 +24,15 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
   }
 
   void _onSelectCard(DraftCard card) {
+    if (_isBanishMode) {
+      widget.game.draftSystem.banishItem(card.id, widget.game.runState);
+      setState(() {
+        _isBanishMode = false;
+        _cards = widget.game.draftSystem.generateDraft(widget.game.runState);
+      });
+      return;
+    }
+
     widget.game.draftSystem.applyCard(card, widget.game.runState);
     if (card.type == DraftCardType.newWeapon) {
       widget.game.refreshWeaponComponents();
@@ -30,8 +40,31 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
     widget.game.resumeFromLevelUp();
   }
 
+  void _onReroll() {
+    if (widget.game.runState.rerollCharges <= 0) return;
+    setState(() {
+      _isBanishMode = false;
+      _cards = widget.game.draftSystem.rerollDraft(widget.game.runState);
+    });
+  }
+
+  void _onSkip() {
+    if (widget.game.runState.skipCharges <= 0) return;
+    widget.game.draftSystem.skipDraft(widget.game.runState);
+    widget.game.resumeFromLevelUp();
+  }
+
+  void _onToggleBanish() {
+    if (widget.game.runState.banishCharges <= 0) return;
+    setState(() {
+      _isBanishMode = !_isBanishMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final runState = widget.game.runState;
+
     return Scaffold(
       backgroundColor: Colors.black.withValues(alpha: 0.85),
       body: SafeArea(
@@ -41,19 +74,21 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
             children: [
               const SizedBox(height: 12),
               // Header
-              const Text(
-                'LEVEL UP!',
+              Text(
+                _isBanishMode ? 'SELECT CARD TO BANISH' : 'LEVEL UP!',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFFD700),
+                  color: _isBanishMode ? const Color(0xFFEF4444) : const Color(0xFFFFD700),
                   letterSpacing: 2.0,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Choose an upgrade to fortify the Bastion',
-                style: TextStyle(fontSize: 11, color: Colors.white70),
+              Text(
+                _isBanishMode
+                    ? 'Card will be permanently removed from this run\'s draft pool'
+                    : 'Choose an upgrade to fortify the Bastion',
+                style: const TextStyle(fontSize: 11, color: Colors.white70),
               ),
               const SizedBox(height: 16),
 
@@ -68,6 +103,77 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                   },
                 ),
               ),
+
+              const SizedBox(height: 12),
+
+              // Utility Action Tray: Reroll, Skip, Banish
+              Row(
+                children: [
+                  // Reroll Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: runState.rerollCharges > 0 ? _onReroll : null,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF38BDF8),
+                        side: BorderSide(
+                          color: runState.rerollCharges > 0
+                              ? const Color(0xFF38BDF8)
+                              : Colors.white24,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      child: Text(
+                        'Reroll (${runState.rerollCharges})',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Skip Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: runState.skipCharges > 0 ? _onSkip : null,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF43D365),
+                        side: BorderSide(
+                          color: runState.skipCharges > 0
+                              ? const Color(0xFF43D365)
+                              : Colors.white24,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      child: Text(
+                        'Skip (${runState.skipCharges})',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Banish Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: runState.banishCharges > 0 ? _onToggleBanish : null,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _isBanishMode ? Colors.white : const Color(0xFFEF4444),
+                        backgroundColor: _isBanishMode ? const Color(0xFFEF4444) : Colors.transparent,
+                        side: BorderSide(
+                          color: runState.banishCharges > 0
+                              ? const Color(0xFFEF4444)
+                              : Colors.white24,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                      child: Text(
+                        _isBanishMode ? 'Cancel' : 'Banish (${runState.banishCharges})',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
             ],
           ),
         ),
@@ -75,8 +181,9 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
     );
   }
 
+
   Widget _buildCard(DraftCard card) {
-    final Color rarityColor = card.rarity.color;
+    final Color rarityColor = _isBanishMode ? const Color(0xFFEF4444) : card.rarity.color;
 
     return Material(
       color: Colors.transparent,
@@ -86,12 +193,12 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1C2C),
+            color: _isBanishMode ? const Color(0xFF2A1515) : const Color(0xFF1A1C2C),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: rarityColor, width: 1.5),
+            border: Border.all(color: rarityColor, width: _isBanishMode ? 2.0 : 1.5),
             boxShadow: [
               BoxShadow(
-                color: rarityColor.withValues(alpha: 0.2),
+                color: rarityColor.withValues(alpha: 0.25),
                 blurRadius: 8,
                 spreadRadius: 1,
               ),
@@ -112,7 +219,9 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                       border: Border.all(color: rarityColor, width: 0.8),
                     ),
                     child: Text(
-                      '${card.rarity.label.toUpperCase()} ${card.rarity.multiplier}x',
+                      _isBanishMode
+                          ? 'BANISH ITEM'
+                          : '${card.rarity.label.toUpperCase()} ${card.rarity.multiplier}x',
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
@@ -121,6 +230,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> {
                       ),
                     ),
                   ),
+
                   Text(
                     card.subtitle,
                     style: const TextStyle(fontSize: 10, color: Colors.white54),

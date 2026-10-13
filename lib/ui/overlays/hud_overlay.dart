@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../game/bonkhold_game.dart';
+import '../../models/run_state.dart';
 import 'overlay_ids.dart';
 
 /// Responsive In-Game HUD overlay displaying run timer, kills, gold, XP bar,
@@ -146,8 +147,74 @@ class HudOverlay extends StatelessWidget {
                     );
                   },
                 ),
+
+                // Boss Health Bar (appears when a Boss is alive)
+                ValueListenableBuilder<BossInfo?>(
+                  valueListenable: runState.activeBoss,
+                  builder: (context, boss, _) {
+                    if (boss == null) return const SizedBox.shrink();
+                    final double fraction = (boss.hp / boss.maxHp).clamp(0.0, 1.0);
+                    return Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.8),
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(color: const Color(0xFF8A2BE2), width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF8A2BE2).withValues(alpha: 0.4),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          FractionallySizedBox(
+                            widthFactor: fraction,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF8A2BE2),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'BOSS: ${boss.name.toUpperCase()} (${(fraction * 100).toInt()}%)',
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFFD700),
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
+          ),
+
+          // Overtime vignette pulse overlay
+          ValueListenableBuilder<bool>(
+            valueListenable: runState.isOvertime,
+            builder: (context, isOvertime, _) {
+              if (!isOvertime) return const SizedBox.shrink();
+              return IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                      width: 4,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
 
           // Bottom Hull Status Bar

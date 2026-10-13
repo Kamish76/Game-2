@@ -4,7 +4,14 @@ import '../config/game_config.dart';
 import '../data/enemies.dart';
 import '../models/enemy_def.dart';
 
-typedef SpawnCallback = void Function(EnemyDef def, double x, double y);
+typedef SpawnCallback = void Function(
+  EnemyDef def,
+  double x,
+  double y, {
+  bool isElite,
+  double statMultiplierHp,
+  double statMultiplierSpeed,
+});
 
 /// Controls wave pacing, credit replenishment, and 360° off-screen perimeter spawning.
 class SpawnDirector {
@@ -22,15 +29,19 @@ class SpawnDirector {
 
   double _accumulatedCredits = 0.0;
   double _elapsedTime = 0.0;
+  int _bossesSpawned = 0;
 
   double get elapsedTime => _elapsedTime;
   double get accumulatedCredits => _accumulatedCredits;
+  int get bossesSpawned => _bossesSpawned;
 
   /// Calculates credits earned per second at elapsed time [t].
   /// Formula: (4 + 0.35*t + 0.005*t^2) * (1 + curse)
+  /// At t >= 900s (Overtime / Final Swarm): doubles by +100% (2.0x)
   static double creditsPerSecond(double t, double curse) {
     final double baseRate = 4.0 + 0.35 * t + 0.005 * t * t;
-    return baseRate * (1.0 + curse);
+    final double overtimeMult = t >= 900.0 ? 2.0 : 1.0;
+    return baseRate * (1.0 + curse) * overtimeMult;
   }
 
   void update(double dt, double curse) {
@@ -38,16 +49,41 @@ class SpawnDirector {
     final double rate = creditsPerSecond(_elapsedTime, curse);
     _accumulatedCredits += rate * dt;
 
+    // Check 3-minute Boss spawn (180s, 360s, 540s, ...)
+    final int targetBossCount = (_elapsedTime / 180.0).floor();
+    if (targetBossCount > _bossesSpawned) {
+      _spawnBoss();
+    }
+
     if (getActiveCount() >= maxLiveCap) {
       // Throttle accumulation when screen is full
       _accumulatedCredits = math.min(_accumulatedCredits, 20.0);
       return;
     }
 
-    _trySpawn();
+    _trySpawn(curse);
   }
 
-  void _trySpawn() {
+  void _spawnBoss() {
+    _bossesSpawned++;
+    final double theta = rng.nextDouble() * 2 * math.pi;
+    final double x = GameConfig.spawnRadius * math.cos(theta);
+    final double y = GameConfig.spawnRadius * math.sin(theta);
+
+    // Scaling base HP: 1500 + 350 * (wave - 1)
+    final double hpScale = (1500.0 + 350.0 * (_bossesSpawned - 1)) / yokaiGoliathDef.baseHp;
+
+    onSpawn(
+      yokaiGoliathDef,
+      x,
+      y,
+      isElite: false,
+      statMultiplierHp: hpScale,
+      statMultiplierSpeed: 1.0,
+    );
+  }
+
+  void _trySpawn(double curse) {
     // Determine which enemy types can be picked based on elapsed time
     final List<EnemyDef> available = <EnemyDef>[swarmlingDef];
     if (_elapsedTime >= 20.0) {
@@ -56,10 +92,21 @@ class SpawnDirector {
     if (_elapsedTime >= 50.0) {
       available.add(bruteDef);
     }
+    if (_elapsedTime >= 80.0) {
+      available.add(spitterDef);
+    }
+
+    // Overtime stat escalations: +10% HP and +5% speed per 30s past 900s
+    double statHp = 1.0;
+    double statSpeed = 1.0;
+    if (_elapsedTime >= 900.0) {
+      final int otCycles = ((_elapsedTime - 900.0) / 30.0).floor();
+      statHp = 1.0 + (otCycles * 0.10);
+      statSpeed = 1.0 + (otCycles * 0.05);
+    }
 
     // Spawn while credits allow and under entity cap
     while (_accumulatedCredits >= 1.0 && getActiveCount() < maxLiveCap) {
-      // Pick affordable enemy type
       final affordable = available.where((e) => e.creditCost <= _accumulatedCredits).toList();
       if (affordable.isEmpty) break;
 
@@ -71,12 +118,24 @@ class SpawnDirector {
       final double x = GameConfig.spawnRadius * math.cos(theta);
       final double y = GameConfig.spawnRadius * math.sin(theta);
 
-      onSpawn(chosen, x, y);
+      // Elite probability: 3% * (1 + curse)
+      final bool isElite = rng.nextDouble() < (0.03 * (1.0 + curse));
+
+      onSpawn(
+        chosen,
+        x,
+        y,
+        isElite: isElite,
+        statMultiplierHp: statHp,
+        statMultiplierSpeed: statSpeed,
+      );
     }
   }
 
   void reset() {
     _accumulatedCredits = 0.0;
     _elapsedTime = 0.0;
+    _bossesSpawned = 0;
   }
 }
+

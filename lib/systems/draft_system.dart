@@ -51,7 +51,7 @@ class DraftSystem {
     // 1. Weapon upgrades for currently equipped weapons
     for (int i = 0; i < runState.weapons.length; i++) {
       final EquippedWeapon eq = runState.weapons[i];
-      if (usedIds.contains(eq.def.id)) continue;
+      if (usedIds.contains(eq.def.id) || runState.banishedIds.contains(eq.def.id)) continue;
 
       final Rarity rarity = rollRarity(luck);
       final WeaponStatUpgrade upgrade = eq.def.upgradePool[rng.nextInt(eq.def.upgradePool.length)];
@@ -100,7 +100,9 @@ class DraftSystem {
     if (runState.weapons.length < 4) {
       final ownedWeaponIds = runState.weapons.map((w) => w.def.id).toSet();
       for (final def in allWeapons) {
-        if (!ownedWeaponIds.contains(def.id) && !usedIds.contains(def.id)) {
+        if (!ownedWeaponIds.contains(def.id) &&
+            !usedIds.contains(def.id) &&
+            !runState.banishedIds.contains(def.id)) {
           candidates.add(
             DraftCard(
               type: DraftCardType.newWeapon,
@@ -118,7 +120,11 @@ class DraftSystem {
 
     // 3. Tome upgrades for currently equipped tomes
     for (final tome in runState.tomes) {
-      if (usedIds.contains(tome.def.id) || tome.level >= tome.def.maxLevel) continue;
+      if (usedIds.contains(tome.def.id) ||
+          tome.level >= tome.def.maxLevel ||
+          runState.banishedIds.contains(tome.def.id)) {
+        continue;
+      }
       final Rarity rarity = rollRarity(luck);
       final double delta = (tome.def.baseIncrement * rarity.multiplier);
       final double before = tome.totalBonus;
@@ -148,7 +154,9 @@ class DraftSystem {
     if (runState.tomes.length < 4) {
       final ownedTomeIds = runState.tomes.map((t) => t.def.id).toSet();
       for (final def in allTomes) {
-        if (!ownedTomeIds.contains(def.id) && !usedIds.contains(def.id)) {
+        if (!ownedTomeIds.contains(def.id) &&
+            !usedIds.contains(def.id) &&
+            !runState.banishedIds.contains(def.id)) {
           final Rarity rarity = rollRarity(luck);
           final double delta = (def.baseIncrement * rarity.multiplier);
           final String deltaStr = def.isMultiplier
@@ -200,6 +208,30 @@ class DraftSystem {
     }
 
     return result;
+  }
+
+  /// Re-rolls 3 draft cards using a reroll charge.
+  List<DraftCard> rerollDraft(RunState runState) {
+    if (runState.rerollCharges > 0) {
+      runState.rerollCharges--;
+    }
+    return generateDraft(runState);
+  }
+
+  /// Skips draft, spending a skip charge and granting fallback repair.
+  void skipDraft(RunState runState) {
+    if (runState.skipCharges > 0) {
+      runState.skipCharges--;
+    }
+    runState.heal(runState.maxHp.value * 0.25);
+  }
+
+  /// Banishes an item from this run's pool, spending a banish charge.
+  void banishItem(String id, RunState runState) {
+    if (runState.banishCharges > 0) {
+      runState.banishCharges--;
+      runState.banishedIds.add(id);
+    }
   }
 
   /// Applies the selected card to the player's run state and recomputes stats.
@@ -265,4 +297,5 @@ class DraftSystem {
     // Recompute stats through StatEngine
     StatEngine.recompute(runState);
   }
+
 }

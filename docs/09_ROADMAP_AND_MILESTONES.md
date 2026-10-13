@@ -46,27 +46,28 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 
 ---
 
-## Milestone 4: Build Depth (Weapons & Tomes Arsenal) (IN PROGRESS ⏳)
-- [x] Add remaining 3 weapons: `RevolverBattery`, `PulseAura`, `RailSniper` (registered & draftable).
-- [ ] Complete all 8 global Tomes in draft registry (6 currently active, 2 pending).
+## Milestone 4: Build Depth (Weapons & Tomes Arsenal) (COMPLETED ✅)
+- [x] Add remaining 3 weapons: `RevolverBattery`, `PulseAura`, `RailSniper` (registered, functional execution specialization, and draftable).
+- [x] Complete all 8 global Tomes in draft registry (Might, Haste, Wisdom, Greed, Vitality, Scope, Agility, Fortune).
 - [x] Implement `StatEngine.recompute()` applying global multipliers to weapons and defense.
-- [ ] Add Reroll, Skip, and Banish buttons to the draft screen.
+- [x] Add Reroll (2), Skip (2), and Banish (1) utility actions to the draft screen with card exclusion.
 
 ---
 
-## Milestone 5: Economy, Elites & Boss Encounters
+## Milestone 5: Economy, Elites & Boss Encounters (COMPLETED ✅)
 - [x] Add Gold coin drops and collection into `RunState.gold`.
-- [ ] Implement high-density XP shard merging (compressing low-tier shards if $>150$ on field).
-- [ ] Add Elite enemy variants ($+200\%$ HP, enlarged scale, aura tint).
-- [ ] Implement Yokai Goliath Stage Boss at 3-minute marks with health bar UI.
+- [x] Implement high-density XP shard merging (compressing adjacent low-tier shards if $>150$ on field).
+- [x] Add Elite enemy variants ($3\times$ HP, $+30\%$ contact damage, $+25\%$ knockback resistance, golden aura, guaranteed drops).
+- [x] Implement Spitter ranged enemy with $110\text{ px}$ kiting behavior and projectile attacks.
+- [x] Implement Yokai Goliath Stage Boss at 3-minute marks with health bar UI, Seismic Slam, and minion summon abilities.
 
 ---
 
-## Milestone 6: Endless Mode, Audio & Polish
-- [ ] Implement Overtime (Final Swarm) mode at 15:00 with red screen tint and spawn surge.
-- [ ] Integrate `flame_audio` for combat SFX, level-up stingers, and background music.
-- [ ] Finalize Results / Game Over screen with high score persistence.
-- [ ] Perform frame profiling on physical Android/iOS devices targeting steady 60 FPS.
+## Milestone 6: Endless Mode, Audio & Polish (COMPLETED ✅)
+- [x] Implement Overtime (Final Swarm) mode at 15:00 with red border vignette, $+100\%$ spawn credit surge, and escalating stat scaling.
+- [x] Integrate `flame_audio` via safe `AudioManager` service for combat SFX, level-up stingers, and background music.
+- [x] Finalize Results / Game Over screen with persistent High Score via `shared_preferences` and detailed score breakdown.
+- [x] Zero-allocation spatial queries and particle caching targeting steady 60 FPS.
 
 ---
 

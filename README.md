@@ -69,9 +69,11 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 ---
 
-## 📈 Roadmap Status
+## 📈 Roadmap Status (Phase 1 Complete ✅)
 - **Milestone 0: Foundation & Scaffold** — ✅ Complete (Flutter + Flame running, fixed-resolution pixel camera, tests passing, web build verified, docs complete).
 - **Milestone 1: Tower & Off-Screen Horde** — ✅ Complete (Bastion structural HP, 360° enemy spawns, contact damage, Game Over, reactive HUD).
 - **Milestone 2: Automated Combat & Spatial Acceleration** — ✅ Complete (SpatialHash grid, Ember Staff auto-targeting, AoE detonation, floating damage numbers).
 - **Milestone 3: XP Vacuum & Level-Up Drafting** — ✅ Complete (Gravitational auto-vacuum, XP progression, 3-card draft with rarity rolls, Kitsune Spire Luck passive).
-- **Milestone 4: Build Depth (Weapons & Tomes Arsenal)** — ⏳ In Progress (Arsenal registries integrated and draftable; pending Reroll/Skip/Banish utility charges).
+- **Milestone 4: Build Depth (Weapons & Tomes Arsenal)** — ✅ Complete (Full 4-weapon execution arsenal, 8 global Tomes, StatEngine multiplicative scaling, Reroll/Skip/Banish draft actions).
+- **Milestone 5: Economy, Elites & Boss Encounters** — ✅ Complete (Gold currency drops, >150 shard compression, Elite variants with golden aura, Spitter kiting ranged enemies, Yokai Goliath Boss with health bar).
+- **Milestone 6: Endless Mode, Audio & Polish** — ✅ Complete (15:00 Overtime final surge, AudioManager SFX/BGM channels, SharedPreferences persistent High Score, Game Over breakdown).

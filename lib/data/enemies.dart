@@ -42,8 +42,44 @@ const EnemyDef bruteDef = EnemyDef(
   colorHex: 0xFF993D64,
 );
 
+const EnemyDef spitterDef = EnemyDef(
+  id: 'spitter',
+  name: 'Spitter',
+  creditCost: 5,
+  baseHp: 45.0,
+  speed: 40.0,
+  contactDamage: 4.0,
+  attackInterval: 2.0,
+  knockbackResist: 0.25,
+  radius: 7.0,
+  xpValue: 3,
+  colorHex: 0xFF2CE8F5,
+  isRanged: true,
+  preferredDistance: 110.0,
+  projectileSpeed: 100.0,
+  projectileDamage: 8.0,
+);
+
+const EnemyDef yokaiGoliathDef = EnemyDef(
+  id: 'yokai_goliath',
+  name: 'Yokai Goliath',
+  creditCost: 999,
+  baseHp: 1500.0,
+  speed: 22.0,
+  contactDamage: 30.0,
+  attackInterval: 1.5,
+  knockbackResist: 0.90,
+  radius: 18.0,
+  xpValue: 50,
+  colorHex: 0xFF8A2BE2,
+  isBoss: true,
+);
+
 const List<EnemyDef> allEnemies = [
   swarmlingDef,
   runnerDef,
   bruteDef,
+  spitterDef,
+  yokaiGoliathDef,
 ];
+

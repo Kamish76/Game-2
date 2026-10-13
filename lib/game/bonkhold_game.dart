@@ -41,9 +41,11 @@ class BonkholdGame extends FlameGame {
   late Bastion bastion;
 
   final Map<int, EnemyComponent> _activeEnemies = <int, EnemyComponent>{};
+  final List<PickupComponent> _activePickups = <PickupComponent>[];
   int _nextEnemyId = 1;
 
   int get activeEnemyCount => _activeEnemies.length;
+  int get activePickupCount => _activePickups.length;
   EnemyComponent? findEnemyById(int id) => _activeEnemies[id];
 
   @override
@@ -73,7 +75,15 @@ class BonkholdGame extends FlameGame {
     StatEngine.recompute(runState);
 
     spawnDirector = SpawnDirector(
-      onSpawn: (def, x, y) => spawnEnemy(def, x, y),
+      onSpawn: (def, x, y, {bool isElite = false, double statMultiplierHp = 1.0, double statMultiplierSpeed = 1.0}) =>
+          spawnEnemy(
+            def,
+            x,
+            y,
+            isElite: isElite,
+            statMultiplierHp: statMultiplierHp,
+            statMultiplierSpeed: statMultiplierSpeed,
+          ),
       getActiveCount: () => activeEnemyCount,
       maxLiveCap: 400,
       rng: rng,
@@ -97,35 +107,112 @@ class BonkholdGame extends FlameGame {
   }
 
   /// Spawns a new enemy into the world and tracks it in the active map.
-  void spawnEnemy(EnemyDef def, double x, double y) {
+  void spawnEnemy(
+    EnemyDef def,
+    double x,
+    double y, {
+    bool isElite = false,
+    double statMultiplierHp = 1.0,
+    double statMultiplierSpeed = 1.0,
+  }) {
     if (runState.isGameOver) return;
     final int id = _nextEnemyId++;
     final enemy = EnemyComponent(
       id: id,
       def: def,
       position: Vector2(x, y),
+      isElite: isElite,
+      statMultiplierHp: statMultiplierHp,
+      statMultiplierSpeed: statMultiplierSpeed,
     );
     _activeEnemies[id] = enemy;
     world.add(enemy);
+
+    if (def.isBoss) {
+      runState.activeBoss.value = BossInfo(
+        name: def.name,
+        hp: enemy.hp,
+        maxHp: enemy.maxHp,
+      );
+    }
   }
 
   /// Drops an XP shard or Gold coin at (x, y).
   void spawnPickup(double x, double y, int value, bool isGold) {
-    world.add(
-      PickupComponent(
-        position: Vector2(x, y),
-        value: value,
-        isGold: isGold,
-      ),
+    final pickup = PickupComponent(
+      position: Vector2(x, y),
+      value: value,
+      isGold: isGold,
     );
+    _activePickups.add(pickup);
+    world.add(pickup);
+
+    // High-density optimization: merge low-tier shards if > 150 pickups on field
+    _checkShardMerging();
+  }
+
+  /// Compresses adjacent low-tier XP shards within 32px when active count exceeds 150.
+  void _checkShardMerging() {
+    if (_activePickups.length <= 150) return;
+
+    // Filter candidate low-tier XP shards
+    final lowTierShards = _activePickups
+        .where((p) => !p.isGold && (p.value == 1 || p.value == 5))
+        .toList();
+
+    if (lowTierShards.length < 5) return;
+
+    for (int i = 0; i < lowTierShards.length; i++) {
+      final center = lowTierShards[i];
+
+      final cluster = <PickupComponent>[center];
+      for (int j = 0; j < lowTierShards.length; j++) {
+        if (i == j) continue;
+        final candidate = lowTierShards[j];
+        if (candidate.value != center.value) continue;
+
+        final double dx = candidate.position.x - center.position.x;
+        final double dy = candidate.position.y - center.position.y;
+        if (dx * dx + dy * dy <= 32.0 * 32.0) {
+          cluster.add(candidate);
+          if (cluster.length == 5) break;
+        }
+      }
+
+      if (cluster.length >= 5) {
+        // Merge 5x 1-XP into 1x 5-XP, or 5x 5-XP into 1x 25-XP
+        final int newValue = center.value == 1 ? 5 : 25;
+        final double avgX = center.position.x;
+        final double avgY = center.position.y;
+
+        for (final p in cluster) {
+          _activePickups.remove(p);
+          p.removeFromParent();
+        }
+
+        final merged = PickupComponent(
+          position: Vector2(avgX, avgY),
+          value: newValue,
+          isGold: false,
+        );
+        _activePickups.add(merged);
+        world.add(merged);
+
+        if (_activePickups.length <= 150) break;
+      }
+    }
   }
 
   void onEnemyKilled(EnemyComponent enemy) {
     _activeEnemies.remove(enemy.id);
     runState.addKill();
+    if (enemy.def.isBoss) {
+      runState.activeBoss.value = null;
+    }
   }
 
   void onPickupAbsorbed(PickupComponent pickup) {
+    _activePickups.remove(pickup);
     if (pickup.isGold) {
       runState.addGold(pickup.value);
     } else {
@@ -147,11 +234,18 @@ class BonkholdGame extends FlameGame {
     }
 
     runState.elapsedSeconds.value += step;
+
+    // Overtime mode trigger at 15:00 (900 seconds)
+    if (runState.elapsedSeconds.value >= 900.0) {
+      if (!runState.isOvertime.value) {
+        runState.isOvertime.value = true;
+      }
+      runState.overtimeDuration += step;
+    }
+
     spawnDirector.update(step, runState.stats.curse);
 
-    super.update(step);
-
-    // Rebuild spatial hash with active enemies
+    // Rebuild spatial hash with active enemies before child updates
     spatialHash.clear();
     for (final enemy in _activeEnemies.values) {
       if (enemy.isMounted) {
@@ -164,11 +258,15 @@ class BonkholdGame extends FlameGame {
       }
     }
 
+    super.update(step);
+
+
     // Check level-up threshold
     if (runState.pendingLevelUps > 0 && !overlays.isActive(OverlayIds.levelUp)) {
       pauseForLevelUp();
     }
   }
+
 
   void pauseForLevelUp() {
     runState.isPaused = true;
@@ -223,6 +321,7 @@ class BonkholdGame extends FlameGame {
     for (final p in pickups) {
       p.removeFromParent();
     }
+    _activePickups.clear();
 
     final weapons = world.children.whereType<WeaponComponent>().toList();
     for (final w in weapons) {

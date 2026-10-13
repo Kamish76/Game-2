@@ -23,7 +23,7 @@ void main() {
       int activeCount = 0;
 
       final director = SpawnDirector(
-        onSpawn: (def, x, y) {
+        onSpawn: (def, x, y, {isElite = false, statMultiplierHp = 1.0, statMultiplierSpeed = 1.0}) {
           spawned.add(def);
           coords.add(math.Point(x, y));
           activeCount++;
@@ -48,7 +48,7 @@ void main() {
       int spawnCalls = 0;
 
       final director = SpawnDirector(
-        onSpawn: (def, x, y) {
+        onSpawn: (def, x, y, {isElite = false, statMultiplierHp = 1.0, statMultiplierSpeed = 1.0}) {
           spawnCalls++;
         },
         getActiveCount: () => activeCount,

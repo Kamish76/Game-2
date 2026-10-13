@@ -18,8 +18,9 @@
 - On this macOS workstation, running `flutter` CLI commands requires `BypassSandbox: true` to execute without sandbox permission errors.
 
 ## 5. Flame Testing & Simulation Ticking Hygiene
+- **Mandatory `testWithGame` Test Harness:** Any Flame test asserting on component behavior, spatial indexing, weapon auto-firing, or enemy AI MUST use `testWithGame<BonkholdGame>('...', BonkholdGame.new, (game) async { ... });` from `package:flame_test/flame_test.dart`. Never instantiate raw `game = BonkholdGame(); await game.onLoad();` in unit tests, as `game.isMounted` and child `isMounted` flags will remain `false`.
+- **Lifecycle Mounting Synchronization:** Components added via `world.add(...)` or `spawnEnemy(...)` are queued in Flame's pending lifecycle list. Call `await game.ready();` before advancing simulation ticks or asserting on spatial queries and world state.
 - **Step-Clamped Testing:** The core game loop clamps `dt` to `dt.clamp(0.0, 1.0 / 20.0)` ($0.05\text{s}$). Integration tests simulating durations or cadence intervals MUST advance time in small loops (e.g., `for (int i = 0; i < N; i++) game.update(0.05);`), never with a single large `dt`.
-- **Lifecycle Mount Queueing:** Components added during callbacks (`world.add(...)`) remain in Flame's pending queue until the engine ticks. Run `game.update(0.05)` before asserting on `world.children`.
 
 ## 6. Modern Flutter & Flame Conventions
 - **Color Alpha:** Use `Color.withValues(alpha: ...)` instead of deprecated `Color.withOpacity(...)`.

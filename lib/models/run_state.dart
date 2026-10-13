@@ -30,6 +30,18 @@ class EquippedTome {
   double totalBonus;
 }
 
+class BossInfo {
+  const BossInfo({
+    required this.name,
+    required this.hp,
+    required this.maxHp,
+  });
+
+  final String name;
+  final double hp;
+  final double maxHp;
+}
+
 /// Runtime state of an active game run.
 /// Exposes ValueNotifiers so Flutter UI overlays refresh efficiently on change.
 class RunState {
@@ -56,6 +68,21 @@ class RunState {
   final ValueNotifier<int> kills = ValueNotifier<int>(0);
   final ValueNotifier<double> elapsedSeconds = ValueNotifier<double>(0.0);
 
+  // Elite and Boss tracking
+  final ValueNotifier<int> eliteKills = ValueNotifier<int>(0);
+  final ValueNotifier<int> bossKills = ValueNotifier<int>(0);
+  final ValueNotifier<BossInfo?> activeBoss = ValueNotifier<BossInfo?>(null);
+
+  // Overtime state
+  final ValueNotifier<bool> isOvertime = ValueNotifier<bool>(false);
+  double overtimeDuration = 0.0;
+
+  // Draft utility charges (v1: 2 reroll, 2 skip, 1 banish)
+  int rerollCharges = 2;
+  int skipCharges = 2;
+  int banishCharges = 1;
+  final Set<String> banishedIds = <String>{};
+
   bool isPaused = false;
   bool isGameOver = false;
 
@@ -68,6 +95,7 @@ class RunState {
 
   // Pending level-ups queued
   int pendingLevelUps = 0;
+
 
   /// Calculate XP required to advance from [lvl] to [lvl + 1].
   /// Formula: round(5 + 4*(L-1) + 0.6*(L-1)^2)
@@ -104,6 +132,26 @@ class RunState {
 
   void addKill() {
     kills.value++;
+  }
+
+  void addEliteKill() {
+    eliteKills.value++;
+  }
+
+  void addBossKill() {
+    bossKills.value++;
+  }
+
+  /// Calculates final run score according to design spec:
+  /// (Time_sec * 10 + Kills * 5 + BossKills * 250 + Gold * 2) * OvertimeBonus
+  /// where OvertimeBonus = 1.0 (if t < 900) or 1.0 + (t - 900) / 60
+  int computeFinalScore() {
+    final double t = elapsedSeconds.value;
+    final int k = kills.value;
+    final int bk = bossKills.value;
+    final int g = gold.value;
+    final double overtimeBonus = t >= 900.0 ? 1.0 + ((t - 900.0) / 60.0) : 1.0;
+    return ((t * 10 + k * 5 + bk * 250 + g * 2) * overtimeBonus).round();
   }
 
   /// Applies damage directly to the Bastion (called after DamageResolver).
@@ -143,6 +191,15 @@ class RunState {
     xpProgress.value = 0.0;
     gold.value = 0;
     kills.value = 0;
+    eliteKills.value = 0;
+    bossKills.value = 0;
+    activeBoss.value = null;
+    isOvertime.value = false;
+    overtimeDuration = 0.0;
+    rerollCharges = 2;
+    skipCharges = 2;
+    banishCharges = 1;
+    banishedIds.clear();
     elapsedSeconds.value = 0.0;
     weapons.clear();
     tomes.clear();
@@ -159,6 +216,11 @@ class RunState {
     level.dispose();
     gold.dispose();
     kills.dispose();
+    eliteKills.dispose();
+    bossKills.dispose();
+    activeBoss.dispose();
+    isOvertime.dispose();
     elapsedSeconds.dispose();
   }
 }
+

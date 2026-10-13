@@ -74,6 +74,54 @@ void main() {
       expect(newTomeCards, isEmpty);
     });
 
+    test('reroll decrements charges and generates new draft', () {
+      expect(runState.rerollCharges, 2);
+      final cards = draftSystem.rerollDraft(runState);
+      expect(runState.rerollCharges, 1);
+      expect(cards.isNotEmpty, isTrue);
+    });
+
+    test('skip decrements charges and applies fallback heal', () {
+      expect(runState.skipCharges, 2);
+      runState.hp.value = 50.0;
+      draftSystem.skipDraft(runState);
+      expect(runState.skipCharges, 1);
+      expect(runState.hp.value, 75.0); // +25% maxHp (25 points)
+    });
+
+    test('banish decrements charges and permanently removes item from draft candidates', () {
+      expect(runState.banishCharges, 1);
+      const String targetTomeId = 'damage_tome';
+
+      draftSystem.banishItem(targetTomeId, runState);
+      expect(runState.banishCharges, 0);
+      expect(runState.banishedIds.contains(targetTomeId), isTrue);
+
+      // Repeated drafts should never contain the banished item
+      for (int i = 0; i < 20; i++) {
+        final cards = draftSystem.generateDraft(runState);
+        expect(cards.any((c) => c.id == targetTomeId), isFalse);
+      }
+    });
+
+    test('all 8 global Tomes are defined and present in registry', () {
+      expect(allTomes.length, 8);
+      final tomeIds = allTomes.map((t) => t.id).toSet();
+      expect(
+        tomeIds,
+        containsAll([
+          'damage_tome',
+          'speed_tome',
+          'quantity_tome',
+          'size_tome',
+          'luck_tome',
+          'armor_tome',
+          'xp_tome',
+          'cursed_tome',
+        ]),
+      );
+    });
+
     test('rarity distribution over 100k rolls matches formula within +/- 1%', () {
       final counts = <Rarity, int>{};
       for (final r in Rarity.values) {
@@ -94,3 +142,4 @@ void main() {
     });
   });
 }
+
