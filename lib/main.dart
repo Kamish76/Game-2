@@ -5,7 +5,11 @@ import 'package:flutter/services.dart';
 
 import 'game/bonkhold_game.dart';
 import 'ui/overlays/debug_overlay.dart';
+import 'ui/overlays/game_over_overlay.dart';
+import 'ui/overlays/hud_overlay.dart';
+import 'ui/overlays/level_up_overlay.dart';
 import 'ui/overlays/overlay_ids.dart';
+import 'ui/overlays/pause_overlay.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,8 +52,15 @@ class _GameScreenState extends State<GameScreen> {
         game: _game,
         overlayBuilderMap: {
           OverlayIds.debug: (context, game) => DebugOverlay(game: game),
+          OverlayIds.hud: (context, game) => HudOverlay(game: game),
+          OverlayIds.levelUp: (context, game) => LevelUpOverlay(game: game),
+          OverlayIds.pause: (context, game) => PauseOverlay(game: game),
+          OverlayIds.gameOver: (context, game) => GameOverOverlay(game: game),
         },
-        initialActiveOverlays: [if (kDebugMode) OverlayIds.debug],
+        initialActiveOverlays: [
+          OverlayIds.hud,
+          if (kDebugMode) OverlayIds.debug,
+        ],
       ),
     );
   }
