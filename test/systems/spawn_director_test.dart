@@ -58,5 +58,33 @@ void main() {
       director.update(10.0, 0.0);
       expect(spawnCalls, 0);
     });
+
+    test('dynamically scales spawn perimeter with getSpawnRadius provider', () {
+      final coords = <math.Point<double>>[];
+      int activeCount = 0;
+      const double zoomFactor = 0.80;
+
+      final director = SpawnDirector(
+        onSpawn: (def, x, y, {isElite = false, statMultiplierHp = 1.0, statMultiplierSpeed = 1.0}) {
+          coords.add(math.Point(x, y));
+          activeCount++;
+        },
+        getActiveCount: () => activeCount,
+        maxLiveCap: 400,
+        rng: math.Random(456),
+        getSpawnRadius: () => GameConfig.spawnRadius / zoomFactor,
+      );
+
+      director.update(2.0, 0.0);
+
+      expect(coords, isNotEmpty);
+      final expectedRadius = GameConfig.spawnRadius / 0.80; // 250.0 px
+      expect(director.currentSpawnRadius, closeTo(expectedRadius, 0.01));
+
+      for (final point in coords) {
+        final dist = math.sqrt(point.x * point.x + point.y * point.y);
+        expect(dist, closeTo(expectedRadius, 0.01));
+      }
+    });
   });
 }

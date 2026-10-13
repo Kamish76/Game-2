@@ -49,7 +49,7 @@ class _DebugOverlayState extends State<DebugOverlay> {
             border: Border.all(color: Colors.white24),
           ),
           child: Text(
-            'FPS ${fps.toStringAsFixed(0)}',
+            'FPS ${fps.toStringAsFixed(0)} | ZOOM ${(widget.game.camera.viewfinder.zoom).toStringAsFixed(2)}x',
             style: const TextStyle(
               color: Colors.greenAccent,
               fontSize: 10,

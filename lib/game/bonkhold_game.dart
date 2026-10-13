@@ -9,6 +9,7 @@ import '../data/characters.dart';
 import '../data/weapons.dart';
 import '../models/enemy_def.dart';
 import '../models/run_state.dart';
+import '../systems/camera_director.dart';
 import '../systems/draft_system.dart';
 import '../systems/spawn_director.dart';
 import '../systems/spatial_hash.dart';
@@ -32,6 +33,7 @@ class BonkholdGame extends FlameGame {
 
   final FpsComponent fpsCounter = FpsComponent();
   final math.Random rng = math.Random();
+  final CameraDirector cameraDirector = CameraDirector();
 
   late final RunState runState;
   late final SpatialHash spatialHash;
@@ -87,6 +89,7 @@ class BonkholdGame extends FlameGame {
       getActiveCount: () => activeEnemyCount,
       maxLiveCap: 400,
       rng: rng,
+      getSpawnRadius: () => GameConfig.spawnRadius / cameraDirector.currentZoom,
     );
   }
 
@@ -259,6 +262,14 @@ class BonkholdGame extends FlameGame {
       }
     }
 
+    // Advance dynamic camera zoom-out based on level and survival duration
+    cameraDirector.update(
+      step,
+      level: runState.level.value,
+      elapsedSeconds: runState.elapsedSeconds.value,
+    );
+    camera.viewfinder.zoom = cameraDirector.currentZoom;
+
     super.update(step);
 
 
@@ -336,6 +347,8 @@ class BonkholdGame extends FlameGame {
     );
     StatEngine.recompute(runState);
     spawnDirector.reset();
+    cameraDirector.reset();
+    camera.viewfinder.zoom = cameraDirector.currentZoom;
 
     // Re-mount weapon
     world.add(

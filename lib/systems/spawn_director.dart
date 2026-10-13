@@ -13,6 +13,8 @@ typedef SpawnCallback = void Function(
   double statMultiplierSpeed,
 });
 
+typedef SpawnRadiusProvider = double Function();
+
 /// Controls wave pacing, credit replenishment, and 360° off-screen perimeter spawning.
 class SpawnDirector {
   SpawnDirector({
@@ -20,12 +22,16 @@ class SpawnDirector {
     required this.getActiveCount,
     this.maxLiveCap = 400,
     math.Random? rng,
+    this.getSpawnRadius,
   }) : rng = rng ?? math.Random();
 
   final SpawnCallback onSpawn;
   final int Function() getActiveCount;
   final int maxLiveCap;
   final math.Random rng;
+  final SpawnRadiusProvider? getSpawnRadius;
+
+  double get currentSpawnRadius => getSpawnRadius?.call() ?? GameConfig.spawnRadius;
 
   double _accumulatedCredits = 0.0;
   double _elapsedTime = 0.0;
@@ -67,8 +73,9 @@ class SpawnDirector {
   void _spawnBoss() {
     _bossesSpawned++;
     final double theta = rng.nextDouble() * 2 * math.pi;
-    final double x = GameConfig.spawnRadius * math.cos(theta);
-    final double y = GameConfig.spawnRadius * math.sin(theta);
+    final double r = currentSpawnRadius;
+    final double x = r * math.cos(theta);
+    final double y = r * math.sin(theta);
 
     // Scaling base HP: 1500 + 175 * (wave - 1)
     final double hpScale = (1500.0 + 175.0 * (_bossesSpawned - 1)) / yokaiGoliathDef.baseHp;
@@ -113,10 +120,11 @@ class SpawnDirector {
       final EnemyDef chosen = affordable[rng.nextInt(affordable.length)];
       _accumulatedCredits -= chosen.creditCost;
 
-      // 360° angle on perimeter circle (R = 200px)
+      // 360° angle on perimeter circle (R = currentSpawnRadius)
       final double theta = rng.nextDouble() * 2 * math.pi;
-      final double x = GameConfig.spawnRadius * math.cos(theta);
-      final double y = GameConfig.spawnRadius * math.sin(theta);
+      final double r = currentSpawnRadius;
+      final double x = r * math.cos(theta);
+      final double y = r * math.sin(theta);
 
       // Elite probability: 3% * (1 + curse)
       final bool isElite = rng.nextDouble() < (0.03 * (1.0 + curse));

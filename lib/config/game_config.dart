@@ -10,6 +10,16 @@ abstract final class GameConfig {
   /// Distance from the center (0,0) beyond the visible area where enemies
   /// spawn. Half-diagonal of 180x320 is ~184, plus a margin.
   static const double spawnRadius = 200;
+
+  /// Dynamic camera zoom settings.
+  static const double baseCameraZoom = 1.0;
+  static const double minCameraZoom = 0.70;
+  static const double cameraZoomLerpSpeed = 2.0;
+
+  /// Arena floor dimensions. Sized to generously cover the expanded
+  /// viewport at maximum zoom out without exposing letterbox void.
+  static const double arenaWidth = 640;
+  static const double arenaHeight = 640;
 }
 
 /// Placeholder palette until the real pixel-art palette is chosen

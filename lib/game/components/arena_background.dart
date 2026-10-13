@@ -4,12 +4,12 @@ import 'package:flame/components.dart';
 
 import '../../config/game_config.dart';
 
-/// Placeholder arena floor: fills the 180x320 virtual canvas with a
-/// 16px grid so pixel scaling is easy to eyeball.
+/// Arena floor: fills the arena with a 16px grid centered on the Bastion at (0, 0).
+/// Sized to 640x640 so dynamic camera zoom-out never exposes void letterboxing.
 class ArenaBackground extends PositionComponent {
   ArenaBackground()
       : super(
-          size: Vector2(GameConfig.virtualWidth, GameConfig.virtualHeight),
+          size: Vector2(GameConfig.arenaWidth, GameConfig.arenaHeight),
           anchor: Anchor.center,
           priority: -100,
         );
