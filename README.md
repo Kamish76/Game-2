@@ -71,4 +71,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 ## 📈 Roadmap Status
 - **Milestone 0: Foundation & Scaffold** — ✅ Complete (Flutter + Flame running, fixed-resolution pixel camera, tests passing, web build verified, docs complete).
-- **Milestone 1: Tower & Off-Screen Horde** — ⏳ Next up (Bastion HP/Shield, 360° enemy spawns, contact damage, Game Over).
+- **Milestone 1: Tower & Off-Screen Horde** — ✅ Complete (Bastion structural HP, 360° enemy spawns, contact damage, Game Over, reactive HUD).
+- **Milestone 2: Automated Combat & Spatial Acceleration** — ✅ Complete (SpatialHash grid, Ember Staff auto-targeting, AoE detonation, floating damage numbers).
+- **Milestone 3: XP Vacuum & Level-Up Drafting** — ✅ Complete (Gravitational auto-vacuum, XP progression, 3-card draft with rarity rolls, Kitsune Spire Luck passive).
+- **Milestone 4: Build Depth (Weapons & Tomes Arsenal)** — ⏳ In Progress (Arsenal registries integrated and draftable; pending Reroll/Skip/Banish utility charges).

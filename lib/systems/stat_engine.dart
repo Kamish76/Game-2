@@ -20,12 +20,12 @@ abstract final class StatEngine {
     const double lifesteal = 0.0;
     double thorns = 0.0;
     double xpGain = 0.0;
-    const double curse = 0.0;
+    double curse = 0.0;
     double attraction = char.attractionRadius;
 
     double damage = 1.0;
     double attackSpeed = 0.0;
-    const int quantity = 0;
+    int quantity = 0;
     double size = 0.0;
     const double projSpeed = 0.0;
     const double duration = 0.0;
@@ -43,6 +43,9 @@ abstract final class StatEngine {
         case 'attackSpeed':
           attackSpeed += bonus;
           break;
+        case 'quantity':
+          quantity += bonus.round();
+          break;
         case 'size':
           size += bonus;
           break;
@@ -54,6 +57,9 @@ abstract final class StatEngine {
           break;
         case 'xpGain':
           xpGain += bonus;
+          break;
+        case 'curse':
+          curse += bonus;
           break;
         case 'attraction':
           attraction += bonus;

@@ -73,5 +73,24 @@ void main() {
       final newTomeCards = cards.where((c) => c.type == DraftCardType.newTome);
       expect(newTomeCards, isEmpty);
     });
+
+    test('rarity distribution over 100k rolls matches formula within +/- 1%', () {
+      final counts = <Rarity, int>{};
+      for (final r in Rarity.values) {
+        counts[r] = 0;
+      }
+
+      const int trials = 100000;
+      for (int i = 0; i < trials; i++) {
+        final r = draftSystem.rollRarity(0.0);
+        counts[r] = counts[r]! + 1;
+      }
+
+      expect(counts[Rarity.common]! / trials, closeTo(0.60, 0.01));
+      expect(counts[Rarity.uncommon]! / trials, closeTo(0.25, 0.01));
+      expect(counts[Rarity.rare]! / trials, closeTo(0.10, 0.01));
+      expect(counts[Rarity.epic]! / trials, closeTo(0.04, 0.01));
+      expect(counts[Rarity.legendary]! / trials, closeTo(0.01, 0.005));
+    });
   });
 }

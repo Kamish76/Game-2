@@ -16,46 +16,46 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 
 ---
 
-## Milestone 1: Tower Resilience & Off-Screen Horde
-- [ ] Implement `Bastion` structural HP, Shield, and Armor data models.
-- [ ] Create `EnemyComponent` with directional vector movement toward $(0, 0)$.
-- [ ] Implement `SpawnDirector` with 360° off-screen perimeter circle ($R=200\text{ px}$).
-- [ ] Enemies detect contact with Bastion radius and inflict damage on attack interval.
-- [ ] Basic HUD displaying Bastion HP bar and run survival timer.
-- [ ] Trigger `GameOver` overlay when Bastion HP reaches 0.
+## Milestone 1: Tower Resilience & Off-Screen Horde (COMPLETED ✅)
+- [x] Implement `Bastion` structural HP, Shield, and Armor data models.
+- [x] Create `EnemyComponent` with directional vector movement toward $(0, 0)$.
+- [x] Implement `SpawnDirector` with 360° off-screen perimeter circle ($R=200\text{ px}$).
+- [x] Enemies detect contact with Bastion radius and inflict damage on attack interval.
+- [x] Basic HUD displaying Bastion HP bar and run survival timer.
+- [x] Trigger `GameOver` overlay when Bastion HP reaches 0.
 
 ---
 
-## Milestone 2: Automated Combat & Spatial Acceleration
-- [ ] Implement `SpatialHash` uniform grid for fast circle-circle queries.
-- [ ] Build `EmberStaff` component: auto-targeting enemy closest to $(0, 0)$.
-- [ ] Implement `ProjectileComponent` with object pooling.
-- [ ] Add AoE detonation logic damaging all enemies within blast radius.
-- [ ] Enemy death handling: flashing, HP depletion, return to pool.
-- [ ] Floating damage numbers overlay with pooling.
+## Milestone 2: Automated Combat & Spatial Acceleration (COMPLETED ✅)
+- [x] Implement `SpatialHash` uniform grid for fast circle-circle queries.
+- [x] Build `EmberStaff` component: auto-targeting enemy closest to $(0, 0)$.
+- [x] Implement `ProjectileComponent` with collision and blast detection.
+- [x] Add AoE detonation logic damaging all enemies within blast radius.
+- [x] Enemy death handling: flashing, HP depletion, return to pool / world disposal.
+- [x] Floating damage numbers overlay with critical strike highlights.
 
 ---
 
-## Milestone 3: XP Vacuum & Level-Up Drafting
-- [ ] Implement `PickupComponent` for XP shards.
-- [ ] Build gravitational acceleration vacuum pulling shards within Attraction radius.
-- [ ] Shard absorption into `RunState.xp` and level threshold evaluation.
-- [ ] Build `LevelUp` Flutter overlay: pauses game, displays 3 cards with rolled Rarity.
-- [ ] Apply Kitsune Spire passive: $+1.5\%$ Luck per level-up.
-- [ ] Unit test `DraftSystem` rarity distribution and slot boundaries.
+## Milestone 3: XP Vacuum & Level-Up Drafting (COMPLETED ✅)
+- [x] Implement `PickupComponent` for XP shards.
+- [x] Build gravitational acceleration vacuum pulling shards within Attraction radius.
+- [x] Shard absorption into `RunState.xp` and level threshold evaluation.
+- [x] Build `LevelUp` Flutter overlay: pauses game, displays 3 cards with rolled Rarity.
+- [x] Apply Kitsune Spire passive: $+1.5\%$ Luck per level-up.
+- [x] Unit test `DraftSystem` rarity distribution and slot boundaries.
 
 ---
 
-## Milestone 4: Build Depth (Weapons & Tomes Arsenal)
-- [ ] Add remaining 3 weapons: `RevolverBattery`, `PulseAura`, `RailSniper`.
-- [ ] Add 8 global Tomes to draft registry with 4-slot limit.
-- [ ] Implement `StatEngine.recompute()` applying global multipliers to weapons and defense.
+## Milestone 4: Build Depth (Weapons & Tomes Arsenal) (IN PROGRESS ⏳)
+- [x] Add remaining 3 weapons: `RevolverBattery`, `PulseAura`, `RailSniper` (registered & draftable).
+- [ ] Complete all 8 global Tomes in draft registry (6 currently active, 2 pending).
+- [x] Implement `StatEngine.recompute()` applying global multipliers to weapons and defense.
 - [ ] Add Reroll, Skip, and Banish buttons to the draft screen.
 
 ---
 
 ## Milestone 5: Economy, Elites & Boss Encounters
-- [ ] Add Gold coin drops and collection into `RunState.gold`.
+- [x] Add Gold coin drops and collection into `RunState.gold`.
 - [ ] Implement high-density XP shard merging (compressing low-tier shards if $>150$ on field).
 - [ ] Add Elite enemy variants ($+200\%$ HP, enlarged scale, aura tint).
 - [ ] Implement Yokai Goliath Stage Boss at 3-minute marks with health bar UI.

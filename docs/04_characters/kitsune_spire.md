@@ -48,6 +48,6 @@
 ---
 
 ## 4. Implementation Checklist
-- [ ] Define `kitsuneSpireDef` in `lib/data/characters.dart`.
-- [ ] Hook the `+1.5% Luck` per level passive into `LevelUp` logic.
-- [ ] Automatically assign Ember Staff to Weapon Slot 0 upon game initialization.
+- [x] Define `kitsuneSpireDef` in `lib/data/characters.dart`.
+- [x] Hook the `+1.5% Luck` per level passive into `LevelUp` logic.
+- [x] Automatically assign Ember Staff to Weapon Slot 0 upon game initialization.
