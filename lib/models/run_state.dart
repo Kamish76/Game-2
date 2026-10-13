@@ -68,6 +68,9 @@ class RunState {
   final ValueNotifier<int> kills = ValueNotifier<int>(0);
   final ValueNotifier<double> elapsedSeconds = ValueNotifier<double>(0.0);
 
+  // Equipment loadout version to notify HUD when weapons/tomes change
+  final ValueNotifier<int> loadoutVersion = ValueNotifier<int>(0);
+
   // Elite and Boss tracking
   final ValueNotifier<int> eliteKills = ValueNotifier<int>(0);
   final ValueNotifier<int> bossKills = ValueNotifier<int>(0);
@@ -201,6 +204,7 @@ class RunState {
     banishCharges = 1;
     banishedIds.clear();
     elapsedSeconds.value = 0.0;
+    loadoutVersion.value = 0;
     weapons.clear();
     tomes.clear();
     stats = const StatSheet();
@@ -216,6 +220,7 @@ class RunState {
     level.dispose();
     gold.dispose();
     kills.dispose();
+    loadoutVersion.dispose();
     eliteKills.dispose();
     bossKills.dispose();
     activeBoss.dispose();

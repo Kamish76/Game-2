@@ -36,10 +36,10 @@ class SpawnDirector {
   int get bossesSpawned => _bossesSpawned;
 
   /// Calculates credits earned per second at elapsed time [t].
-  /// Formula: (2.0 + 0.175*t + 0.0025*t^2) * (1 + curse)
+  /// Formula: 0.8 * exp(0.008 * t) * (1 + curse)
   /// At t >= 900s (Overtime / Final Swarm): doubles by +100% (2.0x)
   static double creditsPerSecond(double t, double curse) {
-    final double baseRate = 2.0 + 0.175 * t + 0.0025 * t * t;
+    final double baseRate = 0.8 * math.exp(0.008 * t);
     final double overtimeMult = t >= 900.0 ? 2.0 : 1.0;
     return baseRate * (1.0 + curse) * overtimeMult;
   }
@@ -86,13 +86,13 @@ class SpawnDirector {
   void _trySpawn(double curse) {
     // Determine which enemy types can be picked based on elapsed time
     final List<EnemyDef> available = <EnemyDef>[swarmlingDef];
-    if (_elapsedTime >= 20.0) {
+    if (_elapsedTime >= 30.0) {
       available.add(runnerDef);
     }
-    if (_elapsedTime >= 50.0) {
+    if (_elapsedTime >= 60.0) {
       available.add(bruteDef);
     }
-    if (_elapsedTime >= 80.0) {
+    if (_elapsedTime >= 90.0) {
       available.add(spitterDef);
     }
 

@@ -6,7 +6,7 @@ const WeaponDef emberStaffDef = WeaponDef(
   description: 'Launches arcing fireballs that detonate in an AoE blast.',
   iconAsset: 'assets/images/weapons/ember_staff.png',
   baseStats: WeaponStats(
-    damage: 14.0,
+    damage: 18.0,
     cooldown: 1.25,
     projectiles: 1,
     projSpeed: 140.0,
@@ -46,7 +46,7 @@ const WeaponDef revolverBatteryDef = WeaponDef(
   description: 'Rapid-fire piercing bullets aimed at the nearest threat.',
   iconAsset: 'assets/images/weapons/revolver_battery.png',
   baseStats: WeaponStats(
-    damage: 6.0,
+    damage: 8.0,
     cooldown: 0.45,
     projectiles: 1,
     projSpeed: 220.0,
@@ -69,7 +69,7 @@ const WeaponDef pulseAuraDef = WeaponDef(
   description: 'Radiates a 360° shockwave knocking back all adjacent enemies.',
   iconAsset: 'assets/images/weapons/pulse_aura.png',
   baseStats: WeaponStats(
-    damage: 8.0,
+    damage: 10.0,
     cooldown: 1.8,
     projectiles: 1,
     projSpeed: 0.0,
@@ -92,7 +92,7 @@ const WeaponDef railSniperDef = WeaponDef(
   description: 'Heavy piercing beam targeting the toughest enemy.',
   iconAsset: 'assets/images/weapons/rail_sniper.png',
   baseStats: WeaponStats(
-    damage: 32.0,
+    damage: 40.0,
     cooldown: 2.4,
     projectiles: 1,
     projSpeed: 320.0,

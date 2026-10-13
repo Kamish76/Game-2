@@ -101,6 +101,8 @@ abstract final class StatEngine {
 
     runState.stats = newStats;
     runState.maxHp.value = maxHp;
+    runState.shield.value = shield;
+    runState.loadoutVersion.value++;
     return newStats;
   }
 }

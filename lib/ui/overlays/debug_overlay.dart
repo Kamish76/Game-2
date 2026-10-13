@@ -39,17 +39,22 @@ class _DebugOverlayState extends State<DebugOverlay> {
     final fps = widget.game.fpsCounter.fps;
     return SafeArea(
       child: Align(
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topRight,
         child: Container(
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          color: Colors.black54,
+          margin: const EdgeInsets.only(top: 46, right: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Colors.white24),
+          ),
           child: Text(
             'FPS ${fps.toStringAsFixed(0)}',
             style: const TextStyle(
               color: Colors.greenAccent,
-              fontSize: 12,
+              fontSize: 10,
               fontFamily: 'monospace',
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
