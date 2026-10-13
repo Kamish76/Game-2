@@ -101,11 +101,13 @@ class RunState {
 
 
   /// Calculate XP required to advance from [lvl] to [lvl + 1].
-  /// Formula: round(5 + 4*(L-1) + 0.6*(L-1)^2)
+  /// Formula: round(5.0 + 2.0*(L-1) + 0.25*(L-1)^2)
+  /// Tuned for rapid early-game level progression (Levels 1-12) so players
+  /// can draft sufficient weapon and tome upgrades to defeat the 3-minute boss.
   static int xpForLevel(int lvl) {
     if (lvl <= 1) return 5;
     final double l = (lvl - 1).toDouble();
-    return (5.0 + 4.0 * l + 0.6 * l * l).round();
+    return (5.0 + 2.0 * l + 0.25 * l * l).round();
   }
 
   /// Adds XP, evaluating level thresholds and queuing level-ups.

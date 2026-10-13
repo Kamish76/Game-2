@@ -38,7 +38,7 @@ const EnemyDef bruteDef = EnemyDef(
   attackInterval: 1.5,
   knockbackResist: 0.65,
   radius: 9.0,
-  xpValue: 5,
+  xpValue: 8,
   colorHex: 0xFF993D64,
 );
 
@@ -52,7 +52,7 @@ const EnemyDef spitterDef = EnemyDef(
   attackInterval: 2.0,
   knockbackResist: 0.25,
   radius: 7.0,
-  xpValue: 3,
+  xpValue: 6,
   colorHex: 0xFF2CE8F5,
   isRanged: true,
   preferredDistance: 110.0,
