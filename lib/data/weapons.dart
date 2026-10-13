@@ -7,7 +7,7 @@ const WeaponDef emberStaffDef = WeaponDef(
   iconAsset: 'assets/images/weapons/ember_staff.png',
   baseStats: WeaponStats(
     damage: 18.0,
-    cooldown: 1.25,
+    cooldown: 1.125,
     projectiles: 1,
     projSpeed: 140.0,
     radius: 28.0,

@@ -26,7 +26,7 @@
 
 | Weapon | Damage | Cooldown | Projectiles | Proj Speed | Radius | Pierce | Range | Knockback |
 |---|---|---|---|---|---|---|---|---|
-| **Ember Staff** | 18.0 | 1.25s | 1 | 140 px/s | 28 px | 0 | 180 px | 12 px |
+| **Ember Staff** | 18.0 | 1.125s | 1 | 140 px/s | 28 px | 0 | 180 px | 12 px |
 | **Revolver Battery** | 8.0 | 0.45s | 1 | 220 px/s | 0 px | 1 | 150 px | 6 px |
 | **Pulse Aura** | 10.0 | 1.80s | 1 | 0 px/s | 42 px | $\infty$ | 42 px | 18 px |
 | **Rail Sniper** | 40.0 | 2.40s | 1 | 320 px/s | 0 px | 3 | 220 px | 25 px |
@@ -68,6 +68,6 @@
 
 ## 5. Economy & Escalation Curves
 - **XP per Level:** $\text{xpToNext}(L) = \text{round}\left(5 + 4(L-1) + 0.6(L-1)^2\right)$.
-- **Spawn Budget:** $\text{CreditsPerSec}(t) = 0.8 \times e^{0.008t} \times (1 + \text{Curse})$.
+- **Spawn Budget:** $\text{CreditsPerSec}(t) = 0.72 \times e^{0.008t} \times (1 + \text{Curse})$.
 - **Overtime Surge (15:00+):** $+100\%$ Spawn credits rate, $+5\%\text{ HP}$ per 30s survived.
 - **Boss HP Scaling:** $1,500 + 175 \times (\text{WaveCount} - 1)$.

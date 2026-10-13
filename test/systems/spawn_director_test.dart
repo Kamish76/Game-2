@@ -8,13 +8,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('SpawnDirector', () {
     test('credits formula matches design specifications', () {
-      // 0.8 * exp(0.008*t) * (1 + curse)
+      // 0.72 * exp(0.008*t) * (1 + curse)
       final rate0 = SpawnDirector.creditsPerSecond(0.0, 0.0);
-      expect(rate0, closeTo(0.8, 0.001));
+      expect(rate0, closeTo(0.72, 0.001));
 
       final rate100 = SpawnDirector.creditsPerSecond(100.0, 0.0);
-      // 0.8 * exp(0.8) ~ 1.7804
-      expect(rate100, closeTo(0.8 * math.exp(0.8), 0.001));
+      // 0.72 * exp(0.8) ~ 1.6024
+      expect(rate100, closeTo(0.72 * math.exp(0.8), 0.001));
     });
 
     test('spawns enemies on 200px perimeter circle', () {

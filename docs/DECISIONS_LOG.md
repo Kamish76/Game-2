@@ -86,9 +86,9 @@
 - **Status:** Accepted
 - **Context:** The initial quadratic spawn credit budget ($(4 + 0.35t + 0.005t^2) \times (1 + \text{Curse})$) ramped too aggressively in early run phases, spawning up to 4 enemies/s at $t=0$ and overwhelming players before initial level-ups could be acquired. Baseline weapon damage was also insufficient to one-shot basic Swarmlings ($18\text{ HP}$).
 - **Decision:**
-  1. Replace quadratic scaling with a gentle exponential curve: $\text{CreditsPerSec}(t) = 0.8 \times e^{0.008t} \times (1 + \text{Curse})$.
+  1. Replace quadratic scaling with a gentle exponential curve: $\text{CreditsPerSec}(t) = 0.72 \times e^{0.008t} \times (1 + \text{Curse})$ (tuned down by 10% at opening).
   2. Pace enemy archetype unlocks: Swarmlings ($0\text{s}$), Runners ($30\text{s}$), Brutes ($60\text{s}$), Spitters ($90\text{s}$).
-  3. Increase all baseline weapon damages by +25% rounded up: Ember Staff ($14 \to 18$), Revolver Battery ($6 \to 8$), Pulse Aura ($8 \to 10$), Rail Sniper ($32 \to 40$).
+  3. Increase baseline weapon damages by +25% rounded up (Ember Staff $14 \to 18$, Revolver Battery $6 \to 8$, Pulse Aura $8 \to 10$, Rail Sniper $32 \to 40$) and boost starting Ember Staff attack speed by +10% ($1.25\text{s} \to 1.125\text{s}$ cooldown).
   4. Halve Boss HP wave increment ($+350 \to +175$) and Overtime stat growth ($+5\%\text{ HP}$, $+2.5\%\text{ Speed}$ per 30s).
 - **Consequences:** Smooth early-game onboarding allowing players to one-shot early fodder, draft synergies, and experience an exponential but sustainable horde escalation.
 

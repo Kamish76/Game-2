@@ -22,7 +22,7 @@ void main() {
       final double overtimeRate = SpawnDirector.creditsPerSecond(900.0, 0.0);
 
       // Base formula at 900s without 2x multiplier
-      final double expectedBaseAt900 = 0.8 * math.exp(0.008 * 900.0);
+      final double expectedBaseAt900 = 0.72 * math.exp(0.008 * 900.0);
       expect(overtimeRate, closeTo(expectedBaseAt900 * 2.0, 0.1));
       expect(overtimeRate, greaterThan(preOvertimeRate * 1.9));
     });
