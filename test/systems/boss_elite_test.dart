@@ -2,6 +2,7 @@ import 'package:bonkhold/data/enemies.dart';
 import 'package:bonkhold/game/bonkhold_game.dart';
 import 'package:bonkhold/game/components/enemy_component.dart';
 import 'package:bonkhold/game/components/projectile_component.dart';
+import 'package:bonkhold/game/components/weapon_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame_test/flame_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +30,12 @@ void main() {
       BonkholdGame.new,
       (game) async {
         await game.ready();
+
+        // Clear starting weapons so Bastion does not destroy the test Spitter
+        for (final w in game.world.children.whereType<WeaponComponent>().toList()) {
+          w.removeFromParent();
+        }
+        game.runState.weapons.clear();
 
         game.spawnEnemy(spitterDef, 150.0, 0.0);
         await game.ready();
