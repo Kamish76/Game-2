@@ -150,6 +150,9 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
     required this.isCrit,
     required this.maxDistance,
     this.pierce = 0,
+    this.combustionDetonation = false,
+    this.combustionDamage = 0.0,
+    this.isFrozen = false,
   }) : remainingPierce = pierce,
        super(
           position: position,
@@ -167,6 +170,9 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
   final bool isCrit;
   final double maxDistance;
   final int pierce;
+  final bool combustionDetonation;
+  final double combustionDamage;
+  final bool isFrozen;
 
   int remainingPierce;
   double _traveled = 0.0;
@@ -234,8 +240,18 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
           kbDirX: kbDirX,
           kbDirY: kbDirY,
           kbAmount: knockback,
+          isFrozen: isFrozen,
         );
       }
+    }
+
+    if (combustionDetonation && combustionDamage > 0) {
+      game.world.add(
+        ExplosionBurstComponent(
+          position: position.clone(),
+          maxRadius: 28.0,
+        ),
+      );
     }
 
     removeFromParent();
@@ -253,7 +269,17 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
             kbDirX: dirX,
             kbDirY: dirY,
             kbAmount: knockback,
+            isFrozen: isFrozen,
           );
+
+          if (combustionDetonation && combustionDamage > 0) {
+            game.world.add(
+              ExplosionBurstComponent(
+                position: enemy.position.clone(),
+                maxRadius: 24.0,
+              ),
+            );
+          }
 
           remainingPierce--;
           if (remainingPierce < 0) {

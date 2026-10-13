@@ -71,6 +71,10 @@ class RunState {
   // Equipment loadout version to notify HUD when weapons/tomes change
   final ValueNotifier<int> loadoutVersion = ValueNotifier<int>(0);
 
+  // Passive Item Relics (Phase 2)
+  final ValueNotifier<int> itemsVersion = ValueNotifier<int>(0);
+  final Map<String, int> ownedItems = <String, int>{};
+
   // Elite and Boss tracking
   final ValueNotifier<int> eliteKills = ValueNotifier<int>(0);
   final ValueNotifier<int> bossKills = ValueNotifier<int>(0);
@@ -209,7 +213,31 @@ class RunState {
     loadoutVersion.value = 0;
     weapons.clear();
     tomes.clear();
+    ownedItems.clear();
+    itemsVersion.value = 0;
     stats = const StatSheet();
+  }
+
+  /// Adds a passive item relic and notifies UI.
+  void addItem(String itemId) {
+    ownedItems[itemId] = (ownedItems[itemId] ?? 0) + 1;
+    itemsVersion.value++;
+  }
+
+  /// Returns current stack count of an item relic.
+  int getItemCount(String itemId) => ownedItems[itemId] ?? 0;
+
+  /// Removes one stack of an item relic (used by Alchemical Forge).
+  bool removeItem(String itemId) {
+    final count = ownedItems[itemId] ?? 0;
+    if (count <= 0) return false;
+    if (count == 1) {
+      ownedItems.remove(itemId);
+    } else {
+      ownedItems[itemId] = count - 1;
+    }
+    itemsVersion.value++;
+    return true;
   }
 
   void dispose() {
@@ -223,6 +251,7 @@ class RunState {
     gold.dispose();
     kills.dispose();
     loadoutVersion.dispose();
+    itemsVersion.dispose();
     eliteKills.dispose();
     bossKills.dispose();
     activeBoss.dispose();

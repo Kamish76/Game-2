@@ -31,7 +31,7 @@ abstract final class StatEngine {
     const double duration = 0.0;
     const double critChance = 0.05;
     const double critDamage = 2.0;
-    const double knockback = 0.0;
+    double knockback = 0.0;
 
     // Sum equipped tome bonuses
     for (final tome in runState.tomes) {
@@ -74,6 +74,39 @@ abstract final class StatEngine {
           thorns += bonus;
           break;
       }
+    }
+
+    // Passive Item Relics stat modifiers (Phase 2)
+    final int cloverCount = runState.getItemCount('lucky_clover');
+    if (cloverCount > 0) {
+      luck += 0.10 * cloverCount;
+    }
+
+    final int ironPlatingCount = runState.getItemCount('iron_plating');
+    if (ironPlatingCount > 0) {
+      maxHp += 25.0 * ironPlatingCount;
+      armor += 5.0 * ironPlatingCount;
+    }
+
+    final int magnetizedCount = runState.getItemCount('magnetized_core');
+    if (magnetizedCount > 0) {
+      attraction += (char.attractionRadius * 0.50) * magnetizedCount;
+    }
+
+    final int springsCount = runState.getItemCount('heavy_springs');
+    if (springsCount > 0) {
+      knockback += 0.35 * springsCount;
+    }
+
+    final int bulwarkCount = runState.getItemCount('spiky_bulwark');
+    if (bulwarkCount > 0) {
+      thorns += (armor * 2.0) * bulwarkCount;
+    }
+
+    final int cursedIdolCount = runState.getItemCount('cursed_idol');
+    if (cursedIdolCount > 0) {
+      curse += 0.20 * cursedIdolCount;
+      xpGain += 0.50 * cursedIdolCount;
     }
 
     final newStats = StatSheet(

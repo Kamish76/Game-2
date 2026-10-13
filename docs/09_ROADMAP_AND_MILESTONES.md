@@ -74,12 +74,12 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 ## Phase 2: The Fortress & The Peddler (IN PROGRESS)
 *Detailed architecture: [12_PHASE_2_SPECIFICATION.md](12_PHASE_2_SPECIFICATION.md)*
 
-### Milestone 7: Item Relic Engine & Moat Chests
-- [ ] Implement `ItemDef`, `ItemInstance`, and 12 Core Relics registry.
-- [ ] Build zero-allocation proc hooks in `DamageResolver` (`onHit`, `onCrit`, `onDamaged`, `onDeflect`, `onKill`).
-- [ ] Add Elite ($20\%$) and Boss ($100\%$) chest drops auto-vacuuming to the Bastion moat ring.
-- [ ] Add tap-to-open chest interaction, visual fanfare, and Relic acquisition.
-- [ ] Build Pause Overlay Relic Inspector and HUD indicator.
+### Milestone 7: Item Relic Engine & Moat Chests (COMPLETED ✅)
+- [x] Implement `ItemDef`, `ItemInstance`, and 12 Core Relics registry.
+- [x] Build zero-allocation proc hooks in `DamageResolver` (`onHit`, `onCrit`, `onDamaged`, `onDeflect`, `onKill`).
+- [x] Add Elite ($20\%$) and Boss ($100\%$) chest drops auto-vacuuming to the Bastion moat ring.
+- [x] Add tap-to-open chest interaction, visual fanfare, and Relic acquisition.
+- [x] Build Pause Overlay Relic Inspector and HUD indicator.
 
 ### Milestone 8: The Traveling Merchant & Alchemical Forge
 - [ ] Build `MerchantDirector` scheduling peddler arrival every 3:00.

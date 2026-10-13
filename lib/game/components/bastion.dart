@@ -7,6 +7,7 @@ import '../bonkhold_game.dart';
 import '../../config/game_config.dart';
 import '../../systems/damage_resolver.dart';
 import 'damage_number.dart';
+import 'projectile_component.dart';
 
 /// The central tower at (0,0) defended by auto-targeting turrets.
 class Bastion extends PositionComponent with HasGameReference<BonkholdGame> {
@@ -30,13 +31,25 @@ class Bastion extends PositionComponent with HasGameReference<BonkholdGame> {
   final Paint _flashPaint = Paint()..color = const Color(0xFFFFFFFF);
   final Paint _spiritFlamePaint = Paint()..color = const Color(0xFFFF9900);
 
+  double _overclockCooldown = 0.0;
+
   /// Called when an enemy contacts the Bastion hull.
   void takeContactHit(double rawDamage) {
     final hit = DamageResolver.resolveIncomingHit(
       rawDamage: rawDamage,
       stats: game.runState.stats,
       rng: game.rng,
+      maskOfRuinCount: game.runState.getItemCount('mask_of_ruin'),
     );
+
+    if (hit.thornsDetonation && hit.thornsExplosionDamage > 0) {
+      game.world.add(
+        ExplosionBurstComponent(
+          position: position.clone(),
+          maxRadius: 32.0,
+        ),
+      );
+    }
 
     if (hit.isDeflected) {
       game.world.add(
@@ -51,6 +64,21 @@ class Bastion extends PositionComponent with HasGameReference<BonkholdGame> {
 
     _flashTimer = 0.10;
     game.runState.applyDamage(hit.finalDamage);
+
+    // Overclock Capacitor check: triggers emergency burst if HP < 40%
+    final int overclockCount = game.runState.getItemCount('overclock_capacitor');
+    if (overclockCount > 0 && _overclockCooldown <= 0) {
+      final double hpRatio = game.runState.hp.value / math.max(1.0, game.runState.maxHp.value);
+      if (hpRatio < 0.40) {
+        _overclockCooldown = 60.0;
+        game.world.add(
+          ExplosionBurstComponent(
+            position: position.clone(),
+            maxRadius: 48.0,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -58,6 +86,9 @@ class Bastion extends PositionComponent with HasGameReference<BonkholdGame> {
     super.update(dt);
     if (_flashTimer > 0) {
       _flashTimer -= dt;
+    }
+    if (_overclockCooldown > 0) {
+      _overclockCooldown -= dt;
     }
     _spiritRingAngle += 1.5 * dt;
   }

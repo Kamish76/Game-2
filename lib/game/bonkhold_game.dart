@@ -2,10 +2,12 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 
 import '../config/game_config.dart';
 import '../data/characters.dart';
+import '../data/items.dart';
 import '../data/weapons.dart';
 import '../models/enemy_def.dart';
 import '../models/run_state.dart';
@@ -17,12 +19,15 @@ import '../systems/stat_engine.dart';
 import '../ui/overlays/overlay_ids.dart';
 import 'components/arena_background.dart';
 import 'components/bastion.dart';
+import 'components/chest_component.dart';
+import 'components/damage_number.dart';
 import 'components/enemy_component.dart';
 import 'components/pickup_component.dart';
+import 'components/projectile_component.dart';
 import 'components/weapon_component.dart';
 
 /// Root Flame game orchestrating world entities, systems loop, and UI overlays.
-class BonkholdGame extends FlameGame {
+class BonkholdGame extends FlameGame with TapCallbacks {
   BonkholdGame()
       : super(
           camera: CameraComponent.withFixedResolution(
@@ -44,10 +49,12 @@ class BonkholdGame extends FlameGame {
 
   final Map<int, EnemyComponent> _activeEnemies = <int, EnemyComponent>{};
   final List<PickupComponent> _activePickups = <PickupComponent>[];
+  final List<ChestComponent> _activeChests = <ChestComponent>[];
   int _nextEnemyId = 1;
 
   int get activeEnemyCount => _activeEnemies.length;
   int get activePickupCount => _activePickups.length;
+  int get activeChestCount => _activeChests.length;
   EnemyComponent? findEnemyById(int id) => _activeEnemies[id];
 
   @override
@@ -224,6 +231,52 @@ class BonkholdGame extends FlameGame {
     }
   }
 
+  /// Drops a ChestComponent at (x, y) that vacuums towards the Bastion moat.
+  void spawnChest(double x, double y, {bool isGolden = false}) {
+    final chest = ChestComponent(
+      position: Vector2(x, y),
+      isGolden: isGolden,
+    );
+    _activeChests.add(chest);
+    world.add(chest);
+  }
+
+  /// Hook called when a chest arrives and parks on the moat ring.
+  void onChestParked(ChestComponent chest) {
+    // Registered on moat circle
+  }
+
+  /// Cracks open a parked chest, awarding an Item Relic.
+  void openChest(ChestComponent chest) {
+    if (!chest.isMounted) return;
+    _activeChests.remove(chest);
+    chest.removeFromParent();
+
+    // Roll item relic weighted by rarity and player luck
+    final relic = rollChestRelic(
+      rng,
+      isGolden: chest.isGolden,
+      luck: runState.stats.luck,
+    );
+    runState.addItem(relic.id);
+    StatEngine.recompute(runState);
+
+    // Visual fanfare
+    world.add(
+      ExplosionBurstComponent(
+        position: chest.position.clone(),
+        maxRadius: 28.0,
+      ),
+    );
+    world.add(
+      DamageNumberComponent(
+        position: chest.position.clone()..y -= 10.0,
+        damage: 0,
+        isCrit: true,
+      ),
+    );
+  }
+
   @override
   void update(double dt) {
     if (runState.isPaused) return;
@@ -334,6 +387,12 @@ class BonkholdGame extends FlameGame {
       p.removeFromParent();
     }
     _activePickups.clear();
+
+    final chests = world.children.whereType<ChestComponent>().toList();
+    for (final c in chests) {
+      c.removeFromParent();
+    }
+    _activeChests.clear();
 
     final weapons = world.children.whereType<WeaponComponent>().toList();
     for (final w in weapons) {

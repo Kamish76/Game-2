@@ -158,7 +158,14 @@ class WeaponComponent extends PositionComponent with HasGameReference<BonkholdGa
       weaponKnockback: equippedWeapon.stats.knockback,
       stats: game.runState.stats,
       rng: game.rng,
+      combustionCount: game.runState.getItemCount('combustion_elixir'),
+      shatterCount: game.runState.getItemCount('shatter_crystal'),
+      bloodfangCount: game.runState.getItemCount('bloodfang_dagger'),
     );
+
+    if (hit.healAmount > 0) {
+      game.runState.heal(hit.healAmount);
+    }
 
     final int totalProjs = equippedWeapon.stats.projectiles + game.runState.stats.quantity;
     final double blastRadius = equippedWeapon.stats.radius > 0
@@ -190,6 +197,9 @@ class WeaponComponent extends PositionComponent with HasGameReference<BonkholdGa
           isCrit: hit.isCrit,
           maxDistance: range,
           pierce: equippedWeapon.stats.pierce,
+          combustionDetonation: hit.combustionDetonation,
+          combustionDamage: hit.combustionDamage,
+          isFrozen: hit.isFrozen,
         ),
       );
     }

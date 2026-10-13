@@ -50,6 +50,9 @@ class EnemyComponent extends PositionComponent with HasGameReference<BonkholdGam
   late double effectiveKnockbackResist;
   late double effectiveContactDamage;
 
+  double freezeTimer = 0.0;
+  double get currentSpeed => effectiveSpeed * (freezeTimer > 0 ? 0.35 : 1.0);
+
   double _attackTimer = 0.0;
   double _flashTimer = 0.0;
 
@@ -96,6 +99,10 @@ class EnemyComponent extends PositionComponent with HasGameReference<BonkholdGam
       _flashTimer -= dt;
     }
 
+    if (freezeTimer > 0) {
+      freezeTimer -= dt;
+    }
+
     // Knockback movement
     if (_kbTimeRemaining > 0) {
       position.x += _kbDirX * _kbSpeed * dt;
@@ -134,8 +141,8 @@ class EnemyComponent extends PositionComponent with HasGameReference<BonkholdGam
         _attackTimer = 0.0;
       }
     } else if (dist > contactDistance) {
-      // March towards center
-      final double step = effectiveSpeed * dt;
+      // March towards center (factoring in freeze slow)
+      final double step = currentSpeed * dt;
       position.x -= (px / dist) * step;
       position.y -= (py / dist) * step;
     } else {
@@ -184,9 +191,13 @@ class EnemyComponent extends PositionComponent with HasGameReference<BonkholdGam
     required double kbDirX,
     required double kbDirY,
     required double kbAmount,
+    bool isFrozen = false,
   }) {
     hp -= damage;
     _flashTimer = 0.08;
+    if (isFrozen) {
+      freezeTimer = 1.5;
+    }
 
     if (def.isBoss) {
       game.runState.activeBoss.value = BossInfo(
@@ -220,17 +231,34 @@ class EnemyComponent extends PositionComponent with HasGameReference<BonkholdGam
   }
 
   void die() {
+    if (game.runState.getItemCount('volatile_cask') > 0) {
+      final double distSq = position.x * position.x + position.y * position.y;
+      if (distSq <= 75.0 * 75.0) {
+        // Detonates volatile poison burst near Bastion
+        game.world.add(
+          ExplosionBurstComponent(
+            position: position.clone(),
+            maxRadius: 22.0,
+          ),
+        );
+      }
+    }
+
     if (def.isBoss) {
-      // Boss rewards: 2x Mega Shards (100 XP each) and 25 Gold
+      // Boss rewards: 2x Mega Shards (100 XP each), 25 Gold, and 100% Guaranteed Golden Chest
       game.spawnPickup(position.x - 6.0, position.y, 100, false);
       game.spawnPickup(position.x + 6.0, position.y, 100, false);
       game.spawnPickup(position.x, position.y, 25, true);
+      game.spawnChest(position.x, position.y, isGolden: true);
       game.runState.addBossKill();
       game.runState.activeBoss.value = null;
     } else if (isElite) {
-      // Elite rewards: Greater shard (25 XP) + guaranteed gold
+      // Elite rewards: Greater shard (25 XP) + guaranteed gold + 20% Chest drop chance
       game.spawnPickup(position.x, position.y, 25, false);
       game.spawnPickup(position.x + 4.0, position.y + 4.0, 2, true);
+      if (game.rng.nextDouble() < 0.20) {
+        game.spawnChest(position.x, position.y, isGolden: false);
+      }
       game.runState.addEliteKill();
     } else {
       // Standard rewards
