@@ -78,7 +78,9 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     merchantDirector = MerchantDirector();
 
     // Register fallback overlay builder stubs so headless tests can trigger overlays safely
+    // without overwriting real UI widgets registered by GameWidget.
     for (final id in [
+      OverlayIds.debug,
       OverlayIds.hud,
       OverlayIds.levelUp,
       OverlayIds.pause,
@@ -86,7 +88,9 @@ class BonkholdGame extends FlameGame with TapCallbacks {
       OverlayIds.merchant,
       OverlayIds.shrine,
     ]) {
-      overlays.addEntry(id, (_, _) => const SizedBox.shrink());
+      if (!overlays.registeredOverlays.contains(id)) {
+        overlays.addEntry(id, (_, _) => const SizedBox.shrink());
+      }
     }
 
     _initRun();
@@ -457,6 +461,10 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     // Reset state & director with updated meta-progression stats
     runState.metaStats = MetaRepository.instance.getActiveStats();
     runState.reset();
+    runState.isPaused = false;
+    if (paused) {
+      resumeEngine();
+    }
     runState.weapons.add(
       EquippedWeapon(def: emberStaffDef, stats: emberStaffDef.baseStats),
     );

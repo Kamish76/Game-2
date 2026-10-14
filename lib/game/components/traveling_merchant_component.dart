@@ -113,7 +113,6 @@ class TravelingMerchantComponent extends PositionComponent
     if (state == MerchantState.parked || state == MerchantState.arriving) {
       // Pause game and open Caravanserai Shop
       game.runState.isPaused = true;
-      game.pauseEngine();
       game.overlays.add(OverlayIds.merchant);
     }
   }

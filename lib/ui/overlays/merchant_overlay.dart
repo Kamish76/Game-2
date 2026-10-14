@@ -120,7 +120,9 @@ class _MerchantOverlayState extends State<MerchantOverlay>
 
   void _resumeCombat() {
     widget.game.runState.isPaused = false;
-    widget.game.resumeEngine();
+    if (widget.game.paused) {
+      widget.game.resumeEngine();
+    }
     widget.game.overlays.remove(OverlayIds.merchant);
   }
 
