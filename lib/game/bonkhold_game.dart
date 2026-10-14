@@ -15,6 +15,7 @@ import '../models/run_state.dart';
 import '../systems/camera_director.dart';
 import '../systems/draft_system.dart';
 import '../systems/merchant_director.dart';
+import '../systems/meta_repository.dart';
 import '../systems/spawn_director.dart';
 import '../systems/spatial_hash.dart';
 import '../systems/stat_engine.dart';
@@ -82,6 +83,7 @@ class BonkholdGame extends FlameGame with TapCallbacks {
       OverlayIds.pause,
       OverlayIds.gameOver,
       OverlayIds.merchant,
+      OverlayIds.shrine,
     ]) {
       overlays.addEntry(id, (_, _) => const SizedBox.shrink());
     }
@@ -94,7 +96,10 @@ class BonkholdGame extends FlameGame with TapCallbacks {
   }
 
   void _initRun() {
-    runState = RunState(character: kitsuneSpireDef);
+    runState = RunState(
+      character: kitsuneSpireDef,
+      metaStats: MetaRepository.instance.getActiveStats(),
+    );
     // Equip starting weapon: Ember Staff
     runState.weapons.add(
       EquippedWeapon(def: emberStaffDef, stats: emberStaffDef.baseStats),
@@ -243,7 +248,8 @@ class BonkholdGame extends FlameGame with TapCallbacks {
   void onPickupAbsorbed(PickupComponent pickup) {
     _activePickups.remove(pickup);
     if (pickup.isGold) {
-      runState.addGold(pickup.value);
+      final int value = (pickup.value * runState.metaStats.goldMultiplier).round();
+      runState.addGold(value);
     } else {
       runState.addXp(pickup.value);
     }
@@ -416,6 +422,7 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     overlays.remove(OverlayIds.pause);
     overlays.remove(OverlayIds.levelUp);
     overlays.remove(OverlayIds.merchant);
+    overlays.remove(OverlayIds.shrine);
 
     // Clear active dynamic components
     for (final enemy in _activeEnemies.values) {
@@ -445,7 +452,8 @@ class BonkholdGame extends FlameGame with TapCallbacks {
       w.removeFromParent();
     }
 
-    // Reset state & director
+    // Reset state & director with updated meta-progression stats
+    runState.metaStats = MetaRepository.instance.getActiveStats();
     runState.reset();
     runState.weapons.add(
       EquippedWeapon(def: emberStaffDef, stats: emberStaffDef.baseStats),

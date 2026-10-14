@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
 import 'character_def.dart';
+import 'meta_talents.dart';
 import 'stat_sheet.dart';
 import 'tome_def.dart';
 import 'weapon_def.dart';
@@ -45,14 +46,22 @@ class BossInfo {
 /// Runtime state of an active game run.
 /// Exposes ValueNotifiers so Flutter UI overlays refresh efficiently on change.
 class RunState {
-  RunState({required this.character}) {
-    maxHp.value = character.baseHp;
-    hp.value = character.baseHp;
+  RunState({
+    required this.character,
+    this.metaStats = MetaProgressionStats.zero,
+  }) {
+    final double initialMaxHp = character.baseHp * (1.0 + metaStats.hpBonusPercent);
+    maxHp.value = initialMaxHp;
+    hp.value = initialMaxHp;
     requiredXp.value = xpForLevel(1);
     xpProgress.value = 0.0;
+    rerollCharges = 2 + metaStats.extraDraftCharges;
+    skipCharges = 2 + metaStats.extraDraftCharges;
+    banishCharges = 1 + metaStats.extraDraftCharges;
   }
 
   final CharacterDef character;
+  MetaProgressionStats metaStats;
 
   // Reactive notifiers for the HUD
   final ValueNotifier<double> hp = ValueNotifier<double>(100.0);
@@ -163,6 +172,15 @@ class RunState {
     return ((t * 10 + k * 5 + bk * 250 + g * 2) * overtimeBonus).round();
   }
 
+  /// Computes permanent Silver currency earned for this run:
+  /// Silver = floor(SurvivalSeconds * 0.2) + (ElitesKilled * 2) + (BossesKilled * 10)
+  int computeSilverEarned() {
+    final int timeSilver = (elapsedSeconds.value * 0.2).floor();
+    final int eliteSilver = eliteKills.value * 2;
+    final int bossSilver = bossKills.value * 10;
+    return timeSilver + eliteSilver + bossSilver;
+  }
+
   /// Applies damage directly to the Bastion (called after DamageResolver).
   void applyDamage(double damage) {
     if (isGameOver) return;
@@ -191,8 +209,9 @@ class RunState {
     isPaused = false;
     isGameOver = false;
     pendingLevelUps = 0;
-    maxHp.value = character.baseHp;
-    hp.value = character.baseHp;
+    final double initialMaxHp = character.baseHp * (1.0 + metaStats.hpBonusPercent);
+    maxHp.value = initialMaxHp;
+    hp.value = initialMaxHp;
     shield.value = 0.0;
     currentXp.value = 0;
     level.value = 1;
@@ -205,9 +224,9 @@ class RunState {
     activeBoss.value = null;
     isOvertime.value = false;
     overtimeDuration = 0.0;
-    rerollCharges = 2;
-    skipCharges = 2;
-    banishCharges = 1;
+    rerollCharges = 2 + metaStats.extraDraftCharges;
+    skipCharges = 2 + metaStats.extraDraftCharges;
+    banishCharges = 1 + metaStats.extraDraftCharges;
     banishedIds.clear();
     elapsedSeconds.value = 0.0;
     loadoutVersion.value = 0;

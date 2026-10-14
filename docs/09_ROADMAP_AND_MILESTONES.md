@@ -87,11 +87,11 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 - [x] Build Traveling Merchant modal overlay (purchasing Relics with in-run Gold).
 - [x] Implement Alchemical Forge tab (sacrificing/duplicating items with Gold).
 
-### Milestone 9: Permanent Meta-Progression (Silver Economy)
-- [ ] Implement `MetaRepository` service backed by `SharedPreferences`.
-- [ ] Award Silver Coins on Game Over / Results screen based on survival time and kills.
-- [ ] Build Shrine of Heritage talent tree overlay (Base HP, Armor, Luck, Greed, Draft charges).
-- [ ] Integrate unlocked meta-talents into `StatEngine.recompute()` at run start.
+### Milestone 9: Permanent Meta-Progression (Silver Economy) (COMPLETED ✅)
+- [x] Implement `MetaRepository` service backed by `SharedPreferences`.
+- [x] Award Silver Coins on Game Over / Results screen based on survival time and kills.
+- [x] Build Shrine of Heritage talent tree overlay (Base HP, Armor, Luck, Greed, Draft charges).
+- [x] Integrate unlocked meta-talents into `StatEngine.recompute()` at run start.
 
 ### Milestone 10: Phase 2 Economy Polish, Audio & Verification
 - [ ] Calibrate gold income against merchant pricing and forge transmutation costs.

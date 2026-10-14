@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../game/bonkhold_game.dart';
+import '../../systems/meta_repository.dart';
+import 'overlay_ids.dart';
 
 /// Results and Game Over screen presented when Bastion HP reaches 0.
-/// Displays master score formula results and persists all-time high score.
+/// Displays master score formula results, awards permanent Silver currency,
+/// and allows visiting the Shrine of Heritage talent tree.
 class GameOverOverlay extends StatefulWidget {
   const GameOverOverlay({super.key, required this.game});
 
@@ -18,6 +21,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
   int _highScore = 0;
   bool _isNewHighScore = false;
   late final int _finalScore;
+  late final int _silverEarned;
 
   static const String _highScoreKey = 'bonkhold_high_score';
 
@@ -25,12 +29,16 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
   void initState() {
     super.initState();
     _finalScore = widget.game.runState.computeFinalScore();
+    _silverEarned = widget.game.runState.computeSilverEarned();
     _loadAndSaveHighScore();
   }
 
   Future<void> _loadAndSaveHighScore() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      await MetaRepository.instance.init(prefs);
+      await MetaRepository.instance.addSilver(_silverEarned);
+
       final prevHigh = prefs.getInt(_highScoreKey) ?? 0;
       if (_finalScore > prevHigh) {
         await prefs.setInt(_highScoreKey, _finalScore);
@@ -50,6 +58,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
       }
     } catch (_) {
       // Graceful fallback for test environments without SharedPreferences mock
+      await MetaRepository.instance.addSilver(_silverEarned);
       if (mounted) {
         setState(() {
           _highScore = _finalScore;
@@ -159,10 +168,44 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                       _statRow('Level Reached', '${runState.level.value}'),
                       const Divider(color: Colors.white12, height: 14),
                       _statRow('Gold Collected', '${runState.gold.value}'),
+                      const Divider(color: Colors.white12, height: 14),
+                      _statRow(
+                        'Silver Earned',
+                        '+$_silverEarned Silver',
+                        valueColor: const Color(0xFF93C5FD),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
+
+                // Shrine of Heritage Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 42,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      widget.game.overlays.add(OverlayIds.shrine);
+                    },
+                    icon: const Icon(Icons.account_balance, size: 18),
+                    label: const Text(
+                      'SHRINE OF HERITAGE',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6366F1),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
 
                 // Try Again Button
                 SizedBox(
@@ -195,17 +238,17 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
     );
   }
 
-  Widget _statRow(String label, String value) {
+  Widget _statRow(String label, String value, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: valueColor ?? Colors.white,
           ),
         ),
       ],

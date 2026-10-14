@@ -11,6 +11,7 @@ import 'ui/overlays/level_up_overlay.dart';
 import 'ui/overlays/merchant_overlay.dart';
 import 'ui/overlays/overlay_ids.dart';
 import 'ui/overlays/pause_overlay.dart';
+import 'ui/overlays/shrine_of_heritage_overlay.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +59,7 @@ class _GameScreenState extends State<GameScreen> {
           OverlayIds.pause: (context, game) => PauseOverlay(game: game),
           OverlayIds.gameOver: (context, game) => GameOverOverlay(game: game),
           OverlayIds.merchant: (context, game) => MerchantOverlay(game: game),
+          OverlayIds.shrine: (context, game) => ShrineOfHeritageOverlay(game: game),
         },
         initialActiveOverlays: [
           OverlayIds.hud,

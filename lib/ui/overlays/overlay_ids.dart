@@ -7,4 +7,5 @@ abstract final class OverlayIds {
   static const String pause = 'pause'; // M1
   static const String gameOver = 'gameOver'; // M1
   static const String merchant = 'merchant'; // M8
+  static const String shrine = 'shrine'; // M9
 }

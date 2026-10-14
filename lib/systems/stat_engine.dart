@@ -7,14 +7,16 @@ abstract final class StatEngine {
   static StatSheet recompute(RunState runState) {
     final char = runState.character;
     final int level = runState.level.value;
+    final meta = runState.metaStats;
 
-    // Innate character passive: +1.5% Luck per level-up
+    // Innate character passive: +1.5% Luck per level-up + Permanent Meta Luck
     final double levelLuckBonus = (level - 1) * char.luckPerLevel;
-    double luck = char.baseLuck + levelLuckBonus;
+    double luck = char.baseLuck + levelLuckBonus + meta.bonusLuck;
 
-    double maxHp = char.baseHp;
+    // Base HP scaled by Permanent Meta HP multiplier
+    double maxHp = char.baseHp * (1.0 + meta.hpBonusPercent);
     const double hpRegen = 0.0;
-    double armor = 0.0;
+    double armor = meta.bonusArmor;
     const double evasion = 0.0;
     double shield = 0.0;
     const double lifesteal = 0.0;
