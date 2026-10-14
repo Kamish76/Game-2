@@ -3,8 +3,9 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 
-import '../bonkhold_game.dart';
+import '../../audio/audio_manager.dart';
 import '../../ui/overlays/overlay_ids.dart';
+import '../bonkhold_game.dart';
 
 enum MerchantState {
   arriving,
@@ -78,6 +79,7 @@ class TravelingMerchantComponent extends PositionComponent
           state = MerchantState.parked;
           position.x = dockRadius * math.cos(_approachAngle);
           position.y = dockRadius * math.sin(_approachAngle);
+          AudioManager.instance.playSfx(SfxId.merchantArrive);
         }
         break;
 
@@ -85,6 +87,7 @@ class TravelingMerchantComponent extends PositionComponent
         _remainingStay -= dt;
         if (_remainingStay <= 0) {
           state = MerchantState.departing;
+          AudioManager.instance.playSfx(SfxId.merchantDepart);
         }
         break;
 

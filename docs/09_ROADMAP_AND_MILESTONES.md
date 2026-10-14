@@ -71,7 +71,7 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 
 ---
 
-## Phase 2: The Fortress & The Peddler (IN PROGRESS)
+## Phase 2: The Fortress & The Peddler (COMPLETED ✅)
 *Detailed architecture: [12_PHASE_2_SPECIFICATION.md](12_PHASE_2_SPECIFICATION.md)*
 
 ### Milestone 7: Item Relic Engine & Moat Chests (COMPLETED ✅)
@@ -93,10 +93,10 @@ Every milestone delivers a fully functional, testable build increment. Work prog
 - [x] Build Shrine of Heritage talent tree overlay (Base HP, Armor, Luck, Greed, Draft charges).
 - [x] Integrate unlocked meta-talents into `StatEngine.recompute()` at run start.
 
-### Milestone 10: Phase 2 Economy Polish, Audio & Verification
-- [ ] Calibrate gold income against merchant pricing and forge transmutation costs.
-- [ ] Integrate Phase 2 SFX (chest creak/open, merchant chime/departure, forge hammer).
-- [ ] Comprehensive unit and Flame tests across all new components.
+### Milestone 10: Phase 2 Economy Polish, Audio & Verification (COMPLETED ✅)
+- [x] Calibrate gold income against merchant pricing and forge transmutation costs.
+- [x] Integrate Phase 2 SFX (chest creak/open, merchant chime/departure, forge hammer).
+- [x] Comprehensive unit and Flame tests across all new components.
 
 ---
 

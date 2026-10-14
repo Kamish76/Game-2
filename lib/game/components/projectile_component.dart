@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 
+import '../../audio/audio_manager.dart';
 import '../bonkhold_game.dart';
 
 /// Expanding visual shockwave / fireball burst on impact.
@@ -252,6 +253,7 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
           maxRadius: 28.0,
         ),
       );
+      AudioManager.instance.playSfx(SfxId.relicProc);
     }
 
     removeFromParent();
@@ -279,6 +281,7 @@ class ProjectileComponent extends PositionComponent with HasGameReference<Bonkho
                 maxRadius: 24.0,
               ),
             );
+            AudioManager.instance.playSfx(SfxId.relicProc);
           }
 
           remainingPierce--;

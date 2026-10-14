@@ -1,4 +1,6 @@
+import 'dart:io' show Platform;
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/foundation.dart';
 
 /// Master list of game sound effect identifiers.
 enum SfxId {
@@ -15,6 +17,11 @@ enum SfxId {
   shardMerge,
   bossSpawn,
   gameOver,
+  chestOpen,
+  merchantArrive,
+  merchantDepart,
+  forgeHammer,
+  relicProc,
 }
 
 /// Master list of background music tracks.
@@ -27,7 +34,13 @@ enum BgmId {
 /// Central audio manager service handling SFX and BGM channels.
 /// Provides resilient fallbacks for tests and environments without audio hardware.
 class AudioManager {
-  AudioManager._();
+  AudioManager._() {
+    try {
+      if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
+        isTestMode = true;
+      }
+    } catch (_) {}
+  }
   static final AudioManager instance = AudioManager._();
 
   bool isMuted = false;
@@ -47,6 +60,11 @@ class AudioManager {
     SfxId.shardMerge: 'sfx_shard_merge.ogg',
     SfxId.bossSpawn: 'sfx_enemy_death_large.ogg',
     SfxId.gameOver: 'sfx_bastion_destroyed.ogg',
+    SfxId.chestOpen: 'sfx_chest_open.ogg',
+    SfxId.merchantArrive: 'sfx_merchant_arrive.ogg',
+    SfxId.merchantDepart: 'sfx_merchant_depart.ogg',
+    SfxId.forgeHammer: 'sfx_forge_hammer.ogg',
+    SfxId.relicProc: 'sfx_relic_proc.ogg',
   };
 
   final Map<BgmId, String> _bgmFiles = {
@@ -62,7 +80,7 @@ class AudioManager {
     if (file == null) return;
 
     try {
-      FlameAudio.play(file);
+      FlameAudio.play(file).ignore();
     } catch (_) {
       // Graceful fallback for test or unbundled asset environments
     }
@@ -75,7 +93,7 @@ class AudioManager {
     if (file == null) return;
 
     try {
-      FlameAudio.bgm.play(file);
+      FlameAudio.bgm.play(file).ignore();
     } catch (_) {
       // Graceful fallback
     }
@@ -85,7 +103,7 @@ class AudioManager {
   void stopBgm() {
     if (isTestMode) return;
     try {
-      FlameAudio.bgm.stop();
+      FlameAudio.bgm.stop().ignore();
     } catch (_) {
       // Graceful fallback
     }

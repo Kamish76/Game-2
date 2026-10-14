@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../audio/audio_manager.dart';
 import '../../data/items.dart';
 import '../../game/bonkhold_game.dart';
 import '../../models/item_def.dart';
@@ -113,6 +114,8 @@ class _MerchantOverlayState extends State<MerchantOverlay>
       _forgeResultMessage = 'Transmuted ${sacrificed.name} -> ${replacement.name}!';
       _selectedSacrificeId = null;
     });
+
+    AudioManager.instance.playSfx(SfxId.forgeHammer);
   }
 
   void _resumeCombat() {

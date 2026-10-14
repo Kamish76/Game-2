@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 
+import '../audio/audio_manager.dart';
 import '../config/game_config.dart';
 import '../data/characters.dart';
 import '../data/items.dart';
@@ -284,6 +285,7 @@ class BonkholdGame extends FlameGame with TapCallbacks {
     );
     runState.addItem(relic.id);
     StatEngine.recompute(runState);
+    AudioManager.instance.playSfx(SfxId.chestOpen);
 
     // Visual fanfare
     world.add(
